@@ -23,7 +23,9 @@ export default function StickyBottomCTA({
   return (
     <div
       className={cn(
-        'fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200 p-4 md:hidden z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]',
+        'fixed bottom-0 left-0 right-0 z-50 md:hidden',
+        'bg-[#030712]/90 backdrop-blur-xl border-t border-white/10',
+        'p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]',
         className
       )}
     >
@@ -31,20 +33,20 @@ export default function StickyBottomCTA({
         {/* 選択情報 */}
         {amount && amount > 0 && (
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-slate-500 truncate">
+            <p className="text-xs text-white/50 truncate">
               {FREQUENCY_LABELS[frequency]}
             </p>
-            <p className="text-lg font-bold text-slate-900">
+            <p className="text-xl font-bold text-white">
               ¥{amount.toLocaleString()}
               {frequency === 'monthly' && (
-                <span className="text-sm font-normal text-slate-500">/月</span>
+                <span className="text-sm font-normal text-white/50">/月</span>
               )}
             </p>
           </div>
         )}
         {/* CTAボタン */}
         <Button
-          variant="primary"
+          variant="glow"
           size="lg"
           onClick={onClick}
           className={cn(amount && amount > 0 ? 'flex-shrink-0' : 'w-full')}

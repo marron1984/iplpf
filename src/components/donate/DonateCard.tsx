@@ -16,9 +16,6 @@ import {
   ANALYTICS_EVENTS,
 } from '@/lib/donate/constants';
 import { trackEvent } from '@/lib/analytics';
-import SegmentedControl from '@/components/ui/SegmentedControl';
-import AmountChip from '@/components/ui/AmountChip';
-import PurposeTile from '@/components/ui/PurposeTile';
 import Button from '@/components/ui/Button';
 
 const PURPOSE_OPTIONS = [
@@ -143,137 +140,182 @@ export default function DonateCard({
       : 0
     : amount;
 
-  const frequencyOptions = [
-    { value: 'one_time' as const, label: FREQUENCY_LABELS.one_time },
-    { value: 'monthly' as const, label: FREQUENCY_LABELS.monthly },
-  ];
-
   return (
     <div
       className={cn(
-        'bg-white rounded-2xl shadow-md ring-1 ring-slate-200/60 p-6 md:p-8',
+        'relative rounded-2xl p-6 md:p-8 overflow-hidden',
+        'bg-white/5 backdrop-blur-xl border border-white/10',
+        'shadow-2xl shadow-black/20',
         className
       )}
     >
-      {/* ヘッダー */}
-      <div className="text-center mb-6">
-        <h3 className="text-xl font-semibold text-slate-900 tracking-tight">
-          寄付する
-        </h3>
-        <p className="text-sm text-slate-500 mt-1">
-          あなたの支援が平和を作ります
-        </p>
-      </div>
+      {/* 背景グラデーション */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10 pointer-events-none" />
 
-      {/* 寄付タイプ選択（セグメントUI） */}
-      <div className="mb-6">
-        <SegmentedControl
-          options={frequencyOptions}
-          value={frequency}
-          onChange={handleFrequencyChange}
-          className="w-full"
-        />
-      </div>
+      <div className="relative">
+        {/* ヘッダー */}
+        <div className="text-center mb-8">
+          <h3 className="text-2xl font-bold text-white tracking-tight">
+            寄付する
+          </h3>
+          <p className="text-sm text-white/50 mt-2">
+            あなたの支援が平和を作ります
+          </p>
+        </div>
 
-      {/* 金額選択 */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-slate-700 mb-3">
-          金額を選択
-        </label>
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          {AMOUNT_CHIPS.map((chipAmount) => (
-            <AmountChip
-              key={chipAmount}
-              amount={chipAmount}
-              selected={!isCustomAmount && amount === chipAmount}
-              onClick={() => handleAmountSelect(chipAmount)}
-            />
-          ))}
-        </div>
-        <div className="relative">
-          <input
-            type="text"
-            inputMode="numeric"
-            placeholder="その他の金額を入力"
-            value={customAmount}
-            onChange={handleCustomAmountChange}
-            onFocus={() => setIsCustomAmount(true)}
-            className={cn(
-              'w-full h-11 px-4 rounded-xl border-2 text-sm transition-all duration-200',
-              'focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500',
-              isCustomAmount && customAmount
-                ? 'border-sky-500 bg-sky-50'
-                : 'border-slate-200 hover:border-slate-300'
-            )}
-          />
-          {customAmount && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-500">
-              円
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* 使途選択（タイルUI） */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-slate-700 mb-3">
-          使い道を選択
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {PURPOSE_OPTIONS.slice(0, 3).map((option) => (
-            <PurposeTile
-              key={option.value}
-              icon={option.icon}
-              label={option.label}
-              selected={purpose === option.value}
-              onClick={() => handlePurposeChange(option.value)}
-            />
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          {PURPOSE_OPTIONS.slice(3).map((option) => (
-            <PurposeTile
-              key={option.value}
-              icon={option.icon}
-              label={option.label}
-              selected={purpose === option.value}
-              onClick={() => handlePurposeChange(option.value)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* 確認表示 */}
-      {displayAmount > 0 && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-sky-50 to-slate-50 rounded-xl border border-sky-100">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-600">
-              {FREQUENCY_LABELS[frequency]}
-            </span>
-            <span className="text-xl font-bold text-slate-900">
-              ¥{displayAmount.toLocaleString()}
-              {frequency === 'monthly' && (
-                <span className="text-sm font-normal text-slate-500">/月</span>
-              )}
-            </span>
+        {/* 寄付タイプ選択 */}
+        <div className="mb-6">
+          <div className="flex p-1 rounded-xl bg-white/5 border border-white/10">
+            {(['one_time', 'monthly'] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleFrequencyChange(key)}
+                className={cn(
+                  'flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300',
+                  frequency === key
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                )}
+              >
+                {FREQUENCY_LABELS[key]}
+              </button>
+            ))}
           </div>
         </div>
-      )}
 
-      {/* CTA */}
-      <Button
-        variant="primary"
-        size="xl"
-        onClick={handleSubmit}
-        disabled={displayAmount < MIN_AMOUNT}
-        className="w-full"
-      >
-        今すぐ寄付する
-      </Button>
+        {/* 金額選択 */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-white/70 mb-3">
+            金額を選択
+          </label>
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {AMOUNT_CHIPS.map((chipAmount) => (
+              <button
+                key={chipAmount}
+                type="button"
+                onClick={() => handleAmountSelect(chipAmount)}
+                className={cn(
+                  'py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 border',
+                  !isCustomAmount && amount === chipAmount
+                    ? 'bg-blue-500/20 border-blue-500/50 text-blue-400 shadow-lg shadow-blue-500/10'
+                    : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/20'
+                )}
+              >
+                ¥{chipAmount.toLocaleString()}
+              </button>
+            ))}
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="その他の金額を入力"
+              value={customAmount}
+              onChange={handleCustomAmountChange}
+              onFocus={() => setIsCustomAmount(true)}
+              className={cn(
+                'w-full h-12 px-4 rounded-xl border text-sm transition-all duration-300',
+                'bg-white/5 text-white placeholder-white/30',
+                'focus:outline-none focus:ring-2 focus:ring-blue-500/50',
+                isCustomAmount && customAmount
+                  ? 'border-blue-500/50 bg-blue-500/10'
+                  : 'border-white/10 hover:border-white/20'
+              )}
+            />
+            {customAmount && (
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-white/50">
+                円
+              </span>
+            )}
+          </div>
+        </div>
 
-      <p className="mt-4 text-xs text-slate-400 text-center">
-        次のページで詳細を入力いただきます
-      </p>
+        {/* 使途選択 */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-white/70 mb-3">
+            使い道を選択
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {PURPOSE_OPTIONS.slice(0, 3).map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handlePurposeChange(option.value)}
+                className={cn(
+                  'flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 border min-h-[72px]',
+                  purpose === option.value
+                    ? 'bg-blue-500/20 border-blue-500/50 shadow-lg shadow-blue-500/10'
+                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                )}
+              >
+                <span className="text-xl mb-1">{option.icon}</span>
+                <span className={cn(
+                  'text-xs font-medium text-center leading-tight',
+                  purpose === option.value ? 'text-blue-400' : 'text-white/60'
+                )}>
+                  {option.label}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            {PURPOSE_OPTIONS.slice(3).map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handlePurposeChange(option.value)}
+                className={cn(
+                  'flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 border min-h-[72px]',
+                  purpose === option.value
+                    ? 'bg-blue-500/20 border-blue-500/50 shadow-lg shadow-blue-500/10'
+                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                )}
+              >
+                <span className="text-xl mb-1">{option.icon}</span>
+                <span className={cn(
+                  'text-xs font-medium text-center leading-tight',
+                  purpose === option.value ? 'text-blue-400' : 'text-white/60'
+                )}>
+                  {option.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 確認表示 */}
+        {displayAmount > 0 && (
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/60">
+                {FREQUENCY_LABELS[frequency]}
+              </span>
+              <span className="text-2xl font-bold text-white">
+                ¥{displayAmount.toLocaleString()}
+                {frequency === 'monthly' && (
+                  <span className="text-sm font-normal text-white/50">/月</span>
+                )}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* CTA */}
+        <Button
+          variant="glow"
+          size="xl"
+          onClick={handleSubmit}
+          disabled={displayAmount < MIN_AMOUNT}
+          className="w-full"
+        >
+          今すぐ寄付する
+        </Button>
+
+        <p className="mt-4 text-xs text-white/30 text-center">
+          次のページで詳細を入力いただきます
+        </p>
+      </div>
     </div>
   );
 }

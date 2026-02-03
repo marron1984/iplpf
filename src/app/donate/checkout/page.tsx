@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useCallback, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import DonateSummary from '@/components/donate/DonateSummary';
 import DonorForm from '@/components/donate/DonorForm';
+import Button from '@/components/ui/Button';
 import {
   DonationFrequency,
   DonationPurpose,
@@ -17,7 +19,6 @@ import { MIN_AMOUNT, MAX_AMOUNT } from '@/lib/donate/constants';
 
 function CheckoutPageContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   // URLパラメータから寄付情報を取得
   const frequency =
@@ -124,12 +125,12 @@ function CheckoutPageContent() {
   // 金額が無効な場合は寄付ページに戻す
   if (!amount || amount < MIN_AMOUNT) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#030712] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">寄付金額が設定されていません</p>
+          <p className="text-white/60 mb-4">寄付金額が設定されていません</p>
           <Link
             href="/donate"
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
           >
             寄付ページに戻る
           </Link>
@@ -139,27 +140,40 @@ function CheckoutPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#030712] text-white">
       <Header />
 
-      <main className="py-8 md:py-12">
+      {/* 背景エフェクト */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[80px]" />
+      </div>
+
+      <main className="relative pt-24 pb-12 md:py-32">
         <div className="max-w-2xl mx-auto px-4">
           {/* パンくず */}
-          <nav className="mb-6">
-            <ol className="flex items-center gap-2 text-sm text-gray-500">
+          <nav className="mb-8">
+            <ol className="flex items-center gap-2 text-sm text-white/50">
               <li>
-                <Link href="/donate" className="hover:text-blue-600">
+                <Link href="/donate" className="hover:text-blue-400 transition-colors">
                   寄付する
                 </Link>
               </li>
-              <li>/</li>
-              <li className="text-gray-900 font-medium">お支払い情報</li>
+              <li className="text-white/30">/</li>
+              <li className="text-white font-medium">お支払い情報</li>
             </ol>
           </nav>
 
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            お支払い情報の入力
-          </h1>
+          {/* ヘッダー */}
+          <div className="mb-10">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+              お支払い情報の
+              <span className="gradient-text">入力</span>
+            </h1>
+            <p className="text-white/60">
+              決済はStripeを通じて安全に処理されます
+            </p>
+          </div>
 
           {/* 寄付サマリー */}
           <DonateSummary
@@ -169,8 +183,13 @@ function CheckoutPageContent() {
           />
 
           {/* 寄付者情報フォーム */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
+          <div
+            className={cn(
+              'rounded-2xl p-6 md:p-8 mb-6',
+              'bg-white/5 backdrop-blur-xl border border-white/10'
+            )}
+          >
+            <h2 className="text-xl font-bold text-white mb-6">
               寄付者情報
             </h2>
             <DonorForm
@@ -181,38 +200,45 @@ function CheckoutPageContent() {
           </div>
 
           {/* 決済方法 */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
+          <div
+            className={cn(
+              'rounded-2xl p-6 md:p-8 mb-6',
+              'bg-white/5 backdrop-blur-xl border border-white/10'
+            )}
+          >
+            <h2 className="text-xl font-bold text-white mb-6">
               お支払い方法
             </h2>
-            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-              <svg
-                className="w-8 h-8 text-blue-600"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-              </svg>
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-blue-400"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                </svg>
+              </div>
               <div>
-                <p className="font-medium text-gray-900">クレジットカード</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-medium text-white">クレジットカード</p>
+                <p className="text-sm text-white/50">
                   Visa, Mastercard, American Express, JCB
                 </p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">
+            <p className="mt-4 text-xs text-white/40">
               決済処理はStripeを通じて安全に行われます。カード情報は当サイトでは保存されません。
             </p>
           </div>
 
           {/* 銀行振込案内 */}
-          <div className="bg-blue-50 rounded-xl p-4 mb-6">
-            <p className="text-sm text-blue-800">
+          <div className="rounded-2xl p-5 mb-6 bg-blue-500/10 border border-blue-500/20">
+            <p className="text-sm text-blue-300">
               <span className="font-medium">銀行振込をご希望の場合</span>
               <br />
               <a
                 href="mailto:info@iplpf.org"
-                className="text-blue-600 hover:underline"
+                className="text-blue-400 hover:underline"
               >
                 info@iplpf.org
               </a>
@@ -222,58 +248,34 @@ function CheckoutPageContent() {
 
           {/* エラーメッセージ */}
           {submitError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-sm text-red-700">{submitError}</p>
+            <div className="rounded-2xl p-5 mb-6 bg-red-500/10 border border-red-500/20">
+              <p className="text-sm text-red-400">{submitError}</p>
             </div>
           )}
 
           {/* 送信ボタン */}
-          <button
-            type="button"
+          <Button
+            variant="glow"
+            size="xl"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full py-4 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            isLoading={isSubmitting}
+            className="w-full"
           >
-            {isSubmitting ? (
-              <>
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                処理中...
-              </>
-            ) : (
-              `${amount.toLocaleString()}円を寄付する`
-            )}
-          </button>
+            {amount.toLocaleString()}円を寄付する
+          </Button>
 
-          <p className="mt-4 text-xs text-gray-500 text-center">
+          <p className="mt-6 text-xs text-white/40 text-center">
             「寄付する」ボタンをクリックすると、Stripeの決済ページに移動します。
             <br />
             決済完了後、確認メールをお送りします。
           </p>
 
           {/* キャンセルリンク */}
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <Link
               href="/donate"
-              className="text-sm text-gray-500 hover:text-gray-700"
+              className="text-sm text-white/50 hover:text-white/70 transition-colors"
             >
               キャンセルして戻る
             </Link>
@@ -290,8 +292,11 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 animate-pulse" />
+            <p className="text-sm text-white/40">読み込み中...</p>
+          </div>
         </div>
       }
     >

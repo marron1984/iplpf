@@ -4,23 +4,23 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12">
+    <footer className="border-t border-white/10 py-16">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/25">
                 P
               </div>
-              <span className="text-xl font-bold">PLP財団</span>
+              <span className="text-xl font-bold text-white">PLP財団</span>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-white/50">
               平和を愛する人を増やすために
             </p>
           </div>
           <div>
-            <h4 className="font-bold mb-4">活動</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h4 className="font-bold text-white mb-5">活動</h4>
+            <ul className="space-y-3 text-sm text-white/50">
               <li>
                 <Link href="#" className="hover:text-white transition-colors">
                   平和推進
@@ -44,8 +44,8 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-bold mb-4">寄付</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h4 className="font-bold text-white mb-5">寄付</h4>
+            <ul className="space-y-3 text-sm text-white/50">
               <li>
                 <Link
                   href="/donate"
@@ -67,8 +67,8 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-bold mb-4">情報</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h4 className="font-bold text-white mb-5">情報</h4>
+            <ul className="space-y-3 text-sm text-white/50">
               <li>
                 <Link href="#" className="hover:text-white transition-colors">
                   団体概要
@@ -92,7 +92,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
+        <div className="border-t border-white/10 pt-8 text-center text-sm text-white/40">
           <p>&copy; {new Date().getFullYear()} PLP財団. All rights reserved.</p>
         </div>
       </div>

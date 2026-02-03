@@ -19,44 +19,78 @@ export default function FeaturedTopic({
   className,
 }: FeaturedTopicProps) {
   return (
-    <section className={cn('py-16 md:py-24 bg-slate-50', className)}>
-      <div className="max-w-5xl mx-auto">
+    <section className={cn('relative py-32 overflow-hidden', className)}>
+      {/* 背景エフェクト */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[80px]" />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto px-4">
+        {/* ヘッダー */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight mb-4">
+          <span className="inline-flex items-center px-4 py-2 rounded-full glass mb-6">
+            <span className="w-2 h-2 bg-purple-400 rounded-full mr-3 animate-pulse" />
+            <span className="text-sm text-white/80">注力テーマ</span>
+          </span>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
             {title}
           </h2>
         </div>
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm ring-1 ring-slate-200/60 hover:shadow-lg transition-shadow duration-300">
+
+        {/* カード */}
+        <div
+          className={cn(
+            'relative rounded-3xl overflow-hidden',
+            'bg-white/5 backdrop-blur-xl border border-white/10',
+            'hover:border-white/20 transition-all duration-500',
+            'shadow-2xl shadow-black/20'
+          )}
+        >
           <div className="md:flex">
             {/* 画像 */}
-            <div className="md:w-1/2 relative min-h-[240px] md:min-h-[320px]">
+            <div className="md:w-1/2 relative min-h-[280px] md:min-h-[400px]">
               <Image
                 src={imageUrl}
                 alt="今月の注力テーマ"
                 fill
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-600/20 to-transparent" />
+              {/* グラデーションオーバーレイ */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#030712]/80 md:block hidden" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-transparent to-transparent md:hidden" />
+              {/* カラーオーバーレイ */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/20 mix-blend-overlay" />
             </div>
+
             {/* コンテンツ */}
-            <div className="md:w-1/2 p-8 md:p-10 flex flex-col justify-center">
-              <span className="inline-flex items-center self-start px-3 py-1.5 bg-sky-100 text-sky-700 text-xs font-semibold rounded-full mb-4">
-                <span className="w-1.5 h-1.5 bg-sky-500 rounded-full mr-2" />
-                国連活動支援
+            <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative">
+              {/* バッジ */}
+              <span className="inline-flex items-center self-start px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 mb-6">
+                <span className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse" />
+                <span className="text-xs font-semibold text-blue-400">国連活動支援</span>
               </span>
-              <h3 className="text-xl md:text-2xl font-semibold text-slate-900 mb-4 tracking-tight">
-                国連総会に向けた政策提言活動
+
+              {/* タイトル */}
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-6 tracking-tight leading-tight">
+                国連総会に向けた
+                <br />
+                <span className="gradient-text">政策提言活動</span>
               </h3>
-              <p className="text-slate-600 mb-6 leading-relaxed">
+
+              {/* 説明 */}
+              <p className="text-white/60 mb-8 leading-relaxed text-lg">
                 {description}
               </p>
+
+              {/* リンク */}
               <a
                 href={linkUrl}
-                className="inline-flex items-center text-sky-600 font-semibold hover:text-sky-700 transition-colors group"
+                className="inline-flex items-center text-blue-400 font-semibold hover:text-blue-300 transition-colors group"
               >
                 詳しく見る
                 <svg
-                  className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform"
+                  className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

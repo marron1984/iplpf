@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import {
   DonationFrequency,
   DonationPurpose,
@@ -30,37 +31,42 @@ export default function DonateSummary({
   });
 
   return (
-    <div className="bg-gray-50 rounded-xl p-5 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-gray-900">寄付内容</h3>
+    <div
+      className={cn(
+        'rounded-2xl p-6 mb-6',
+        'bg-white/5 backdrop-blur-xl border border-white/10'
+      )}
+    >
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-lg font-bold text-white">寄付内容</h3>
         {showEditButton && (
           <Link
             href={`/donate?${editParams.toString()}`}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
           >
             変更する
           </Link>
         )}
       </div>
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">寄付タイプ</span>
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm text-white/60">寄付タイプ</span>
+          <span className="text-sm font-medium text-white">
             {FREQUENCY_LABELS[frequency]}
           </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">金額</span>
-          <span className="text-lg font-bold text-blue-600">
+          <span className="text-sm text-white/60">金額</span>
+          <span className="text-xl font-bold gradient-text-blue">
             {amount.toLocaleString()}円
             {frequency === 'monthly' && (
-              <span className="text-sm font-normal text-gray-500">/月</span>
+              <span className="text-sm font-normal text-white/50">/月</span>
             )}
           </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">使い道</span>
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm text-white/60">使い道</span>
+          <span className="text-sm font-medium text-white">
             {PURPOSE_LABELS[purpose]}
           </span>
         </div>

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { forwardRef, ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'outline';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'glow';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   isLoading?: boolean;
 }
@@ -23,17 +23,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+      'relative inline-flex items-center justify-center font-semibold transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden';
 
     const variants = {
       primary:
-        'bg-sky-600 text-white hover:bg-sky-700 active:bg-sky-800 focus:ring-sky-500 shadow-md hover:shadow-lg',
+        'bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:shadow-xl',
       secondary:
-        'bg-slate-100 text-slate-900 hover:bg-slate-200 active:bg-slate-300 focus:ring-slate-400',
+        'bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm border border-white/20',
       ghost:
-        'bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200 focus:ring-slate-400',
+        'bg-transparent text-white/80 hover:text-white hover:bg-white/10',
       outline:
-        'bg-white border-2 border-sky-600 text-sky-600 hover:bg-sky-50 active:bg-sky-100 focus:ring-sky-500',
+        'bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:border-blue-400',
+      glow:
+        'bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl animate-pulse-glow hover:scale-[1.02]',
     };
 
     const sizes = {
@@ -50,6 +52,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         {...props}
       >
+        {/* シマー効果 */}
+        {variant === 'glow' && (
+          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000" />
+        )}
+
         {isLoading ? (
           <>
             <svg
@@ -75,7 +82,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             処理中...
           </>
         ) : (
-          children
+          <span className="relative z-10">{children}</span>
         )}
       </button>
     );

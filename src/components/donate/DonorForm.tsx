@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { cn } from '@/lib/utils';
 import { Donor, DonorType } from '@/lib/donate/types';
 import { DONOR_TYPE_LABELS } from '@/lib/donate/constants';
 
@@ -62,24 +63,37 @@ export default function DonorForm({
     updateDonor({ message: value });
   };
 
+  const inputClasses = cn(
+    'w-full py-3 px-4 rounded-xl border text-sm transition-all duration-300',
+    'bg-white/5 text-white placeholder-white/30',
+    'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50',
+    'border-white/10 hover:border-white/20'
+  );
+
+  const errorInputClasses = cn(
+    inputClasses,
+    'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/50'
+  );
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* 個人/法人選択 */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-white/70 mb-3">
           寄付者タイプ
         </label>
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+        <div className="flex p-1 rounded-xl bg-white/5 border border-white/10">
           {(Object.keys(DONOR_TYPE_LABELS) as DonorType[]).map((key) => (
             <button
               key={key}
               type="button"
               onClick={() => handleTypeChange(key)}
-              className={`flex-1 py-2.5 px-4 text-sm font-medium transition-colors ${
+              className={cn(
+                'flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300',
                 donorType === key
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              )}
             >
               {DONOR_TYPE_LABELS[key]}
             </button>
@@ -91,10 +105,10 @@ export default function DonorForm({
       <div>
         <label
           htmlFor="donor-name"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white/70 mb-3"
         >
           {donorType === 'individual' ? 'お名前' : '法人名'}
-          <span className="text-red-500 ml-1">*</span>
+          <span className="text-red-400 ml-1">*</span>
         </label>
         <input
           id="donor-name"
@@ -104,12 +118,10 @@ export default function DonorForm({
           placeholder={
             donorType === 'individual' ? '山田 太郎' : '株式会社〇〇'
           }
-          className={`w-full py-3 px-4 rounded-lg border text-sm ${
-            errors.name ? 'border-red-500' : 'border-gray-200'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+          className={errors.name ? errorInputClasses : inputClasses}
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+          <p className="mt-2 text-sm text-red-400">{errors.name}</p>
         )}
       </div>
 
@@ -117,10 +129,10 @@ export default function DonorForm({
       <div>
         <label
           htmlFor="donor-email"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white/70 mb-3"
         >
           メールアドレス
-          <span className="text-red-500 ml-1">*</span>
+          <span className="text-red-400 ml-1">*</span>
         </label>
         <input
           id="donor-email"
@@ -128,14 +140,12 @@ export default function DonorForm({
           value={email}
           onChange={(e) => handleEmailChange(e.target.value)}
           placeholder="example@email.com"
-          className={`w-full py-3 px-4 rounded-lg border text-sm ${
-            errors.email ? 'border-red-500' : 'border-gray-200'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+          className={errors.email ? errorInputClasses : inputClasses}
         />
         {errors.email && (
-          <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+          <p className="mt-2 text-sm text-red-400">{errors.email}</p>
         )}
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-white/40">
           確認メールと領収書のご案内をお送りします
         </p>
       </div>
@@ -144,10 +154,10 @@ export default function DonorForm({
       <div>
         <label
           htmlFor="donor-address"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white/70 mb-3"
         >
           住所
-          <span className="text-gray-400 ml-1 text-xs">（任意）</span>
+          <span className="text-white/40 ml-2 text-xs">（任意）</span>
         </label>
         <input
           id="donor-address"
@@ -155,9 +165,9 @@ export default function DonorForm({
           value={address}
           onChange={(e) => handleAddressChange(e.target.value)}
           placeholder="東京都千代田区..."
-          className="w-full py-3 px-4 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={inputClasses}
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-white/40">
           領収書の郵送をご希望の場合はご記入ください
         </p>
       </div>
@@ -166,10 +176,10 @@ export default function DonorForm({
       <div>
         <label
           htmlFor="donor-message"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white/70 mb-3"
         >
           応援メッセージ
-          <span className="text-gray-400 ml-1 text-xs">（任意）</span>
+          <span className="text-white/40 ml-2 text-xs">（任意）</span>
         </label>
         <textarea
           id="donor-message"
@@ -177,7 +187,7 @@ export default function DonorForm({
           onChange={(e) => handleMessageChange(e.target.value)}
           placeholder="応援メッセージがあればお書きください..."
           rows={3}
-          className="w-full py-3 px-4 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className={cn(inputClasses, 'resize-none')}
         />
       </div>
     </div>
