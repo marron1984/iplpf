@@ -11,30 +11,30 @@ const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマー
 
 // Navigation items
 const NAV_ITEMS = [
-  { label: 'Home', href: '/lplpf/' },
-  { label: 'About Us', href: '/lplpf/about-us/' },
-  { label: 'What We Do', href: '/lplpf/what-we-do/' },
-  { label: 'Projects', href: '/lplpf/projects/' },
-  { label: 'News', href: '/lplpf/blog-list/' },
-  { label: 'Contact', href: '/lplpf/contact/' },
+  { label: 'ホーム', href: '/lplpf/' },
+  { label: '私たちについて', href: '/lplpf/about-us/' },
+  { label: '活動内容', href: '/lplpf/what-we-do/' },
+  { label: 'プロジェクト', href: '/lplpf/projects/' },
+  { label: 'お知らせ', href: '/lplpf/blog-list/' },
+  { label: 'お問い合わせ', href: '/lplpf/contact/' },
 ];
 
 // Footer links
 const FOOTER_LINKS = {
   about: [
-    { label: 'About Us', href: '/lplpf/about-us/' },
-    { label: 'What We Do', href: '/lplpf/what-we-do/' },
-    { label: 'Projects', href: '/lplpf/projects/' },
+    { label: '私たちについて', href: '/lplpf/about-us/' },
+    { label: '活動内容', href: '/lplpf/what-we-do/' },
+    { label: 'プロジェクト', href: '/lplpf/projects/' },
   ],
   resources: [
-    { label: 'Publications', href: '/lplpf/publication/' },
-    { label: 'News', href: '/lplpf/blog-list/' },
-    { label: 'Supporter', href: '/lplpf/supporter/' },
+    { label: '出版物', href: '/lplpf/publication/' },
+    { label: 'お知らせ', href: '/lplpf/blog-list/' },
+    { label: 'サポーター', href: '/lplpf/supporter/' },
   ],
   support: [
-    { label: 'One-time Donation', href: '/lplpf/one-time-donation/' },
-    { label: 'Monthly Donation', href: '/lplpf/monthly-donation/' },
-    { label: 'Contact', href: '/lplpf/contact/' },
+    { label: '都度寄付', href: '/lplpf/one-time-donation/' },
+    { label: '継続寄付', href: '/lplpf/monthly-donation/' },
+    { label: 'お問い合わせ', href: '/lplpf/contact/' },
   ],
 };
 
@@ -104,7 +104,7 @@ export default function LplpfLayout({
             ))}
             <Link href="/donate">
               <button className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl h-11 px-5 text-sm font-semibold shadow-sm transition-all hover:shadow-md">
-                Donate
+                寄付する
               </button>
             </Link>
           </nav>
@@ -165,7 +165,7 @@ export default function LplpfLayout({
                   className="block mt-4"
                 >
                   <button className="w-full bg-orange-600 hover:bg-orange-700 text-white rounded-xl h-11 px-5 text-sm font-semibold">
-                    Donate
+                    寄付する
                   </button>
                 </Link>
               </div>
@@ -196,16 +196,15 @@ export default function LplpfLayout({
                 <span className="text-lg font-bold">IPLPF</span>
               </Link>
               <p className="text-sm text-slate-400 leading-relaxed">
-                International Peace Loving People Foundation
+                国際ピース・ラビング・ピープル財団
                 <br />
-                Building peace through education, research, and international
-                cooperation.
+                教育、研究、国際協力を通じて平和を構築
               </p>
             </div>
 
             {/* About Links */}
             <div>
-              <h4 className="font-semibold text-white mb-4">About</h4>
+              <h4 className="font-semibold text-white mb-4">私たちについて</h4>
               <ul className="space-y-2">
                 {FOOTER_LINKS.about.map((link) => (
                   <li key={link.href}>
@@ -222,7 +221,7 @@ export default function LplpfLayout({
 
             {/* Resources Links */}
             <div>
-              <h4 className="font-semibold text-white mb-4">Resources</h4>
+              <h4 className="font-semibold text-white mb-4">リソース</h4>
               <ul className="space-y-2">
                 {FOOTER_LINKS.resources.map((link) => (
                   <li key={link.href}>
@@ -239,7 +238,7 @@ export default function LplpfLayout({
 
             {/* Support Links */}
             <div>
-              <h4 className="font-semibold text-white mb-4">Support</h4>
+              <h4 className="font-semibold text-white mb-4">ご支援</h4>
               <ul className="space-y-2">
                 {FOOTER_LINKS.support.map((link) => (
                   <li key={link.href}>
@@ -265,13 +264,13 @@ export default function LplpfLayout({
                 href="/lplpf/privacy-policy/"
                 className="text-sm text-slate-500 hover:text-orange-400 transition-colors"
               >
-                Privacy Policy
+                プライバシーポリシー
               </Link>
               <Link
                 href="/lplpf/terms/"
                 className="text-sm text-slate-500 hover:text-orange-400 transition-colors"
               >
-                Terms of Use
+                利用規約
               </Link>
             </div>
           </div>
