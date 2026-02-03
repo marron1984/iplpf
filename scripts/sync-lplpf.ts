@@ -1,14 +1,12 @@
 import * as cheerio from 'cheerio';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as crypto from 'crypto';
 import pLimit from 'p-limit';
 
 // Configuration
 const BASE_URL = 'https://www.iplpf.org';
 const CONTENT_DIR = path.join(process.cwd(), 'content/lplpf');
 const PAGES_DIR = path.join(CONTENT_DIR, 'pages');
-const ASSETS_DIR = path.join(process.cwd(), 'public/assets/lplpf');
 const CONCURRENCY = 3;
 
 // Types
@@ -30,7 +28,6 @@ interface PagesIndex {
 const visitedUrls = new Set<string>();
 const urlQueue: string[] = [];
 const pages: PageData[] = [];
-const assetCache = new Map<string, string>(); // original URL -> local path
 const failedUrls: string[] = [];
 
 // Utility functions
@@ -45,10 +42,9 @@ function normalizeUrl(url: string, baseUrl?: string): string | null {
     if (parsed.hostname !== 'www.iplpf.org') {
       return null;
     }
-    // Remove query params and hash for deduplication
-    parsed.search = '';
+    // Remove hash for deduplication (keep query params for pagination)
     parsed.hash = '';
-    // Ensure trailing slash for paths
+    // Ensure trailing slash for paths (except files)
     if (!parsed.pathname.endsWith('/') && !parsed.pathname.match(/\.\w+$/)) {
       parsed.pathname += '/';
     }
@@ -65,8 +61,14 @@ function urlToSlug(url: string): string {
   pathname = pathname.replace(/^\/+|\/+$/g, '');
   // Handle root
   if (!pathname) return 'index';
-  // Replace slashes with dashes for nested paths
-  return pathname.replace(/\//g, '__');
+  // Replace slashes with double underscores for nested paths
+  let slug = pathname.replace(/\//g, '__');
+  // Add page number if present in query
+  const pageMatch = parsed.search.match(/[?&]page=(\d+)/);
+  if (pageMatch) {
+    slug += `__page-${pageMatch[1]}`;
+  }
+  return slug;
 }
 
 function shouldSkipUrl(url: string): boolean {
@@ -75,16 +77,25 @@ function shouldSkipUrl(url: string): boolean {
     /\/wp-login/,
     /\/wp-json\//,
     /\/feed\//,
-    /\?s=/,
-    /\?p=/,
-    /\/tag\//,
-    /\/category\//,
-    /\/author\//,
-    /\/page\/\d+/,
+    /\?s=/,            // search results
     /\/attachment\//,
     /\.(jpg|jpeg|png|gif|pdf|doc|docx|xls|xlsx)$/i,
   ];
   return skipPatterns.some((pattern) => pattern.test(url));
+}
+
+// Check if URL should be crawled (for News pagination, categories, archives)
+function shouldCrawlUrl(url: string): boolean {
+  // Allow pagination pages
+  if (url.includes('/page/') || url.includes('?page=')) return true;
+  // Allow category pages
+  if (url.includes('/category/')) return true;
+  // Allow archive pages (year/month)
+  if (url.match(/\/\d{4}\/\d{2}\//)) return true;
+  // Allow tag pages
+  if (url.includes('/tag/')) return true;
+  // Default: allow if not skipped
+  return !shouldSkipUrl(url);
 }
 
 async function fetchWithRetry(
@@ -96,9 +107,10 @@ async function fetchWithRetry(
       const response = await fetch(url, {
         headers: {
           'User-Agent':
-            'Mozilla/5.0 (compatible; IPLPFSync/1.0; +https://iplpf.vercel.app)',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           Accept:
-            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
         },
       });
       if (!response.ok) {
@@ -113,46 +125,6 @@ async function fetchWithRetry(
     }
   }
   return null;
-}
-
-async function downloadAsset(url: string): Promise<string | null> {
-  // Check cache
-  if (assetCache.has(url)) {
-    return assetCache.get(url)!;
-  }
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (compatible; IPLPFSync/1.0; +https://iplpf.vercel.app)',
-      },
-    });
-
-    if (!response.ok) {
-      console.log(`  Failed to download asset: ${url} (${response.status})`);
-      return null;
-    }
-
-    const buffer = await response.arrayBuffer();
-    const ext = path.extname(new URL(url).pathname) || '.bin';
-    const hash = crypto
-      .createHash('md5')
-      .update(url)
-      .digest('hex')
-      .slice(0, 8);
-    const filename = `${hash}${ext}`;
-    const localPath = path.join(ASSETS_DIR, filename);
-
-    fs.writeFileSync(localPath, Buffer.from(buffer));
-    const webPath = `/assets/lplpf/${filename}`;
-    assetCache.set(url, webPath);
-    console.log(`  Downloaded: ${filename}`);
-    return webPath;
-  } catch (error) {
-    console.log(`  Error downloading ${url}: ${error}`);
-    return null;
-  }
 }
 
 function extractContent($: cheerio.CheerioAPI): {
@@ -182,11 +154,12 @@ function extractContent($: cheerio.CheerioAPI): {
     '#content',
     '.content-area',
     'article',
+    '.site-content',
   ];
 
   for (const selector of contentSelectors) {
     const $el = $(selector);
-    if ($el.length > 0 && $el.text().trim().length > 100) {
+    if ($el.length > 0 && $el.text().trim().length > 50) {
       $content = $el.first();
       break;
     }
@@ -197,7 +170,7 @@ function extractContent($: cheerio.CheerioAPI): {
     $content = $('body').clone();
     $content
       .find(
-        'header, footer, nav, .header, .footer, .nav, .sidebar, .menu, script, style, noscript'
+        'header, footer, nav, .header, .footer, .nav, .sidebar, .menu, script, style, noscript, .widget-area'
       )
       .remove();
   }
@@ -205,38 +178,29 @@ function extractContent($: cheerio.CheerioAPI): {
   // Clean up the content
   if ($content) {
     // Remove scripts, styles, comments
-    $content.find('script, style, noscript, iframe').remove();
-    // Remove empty elements
-    $content
-      .find('p, div, span')
-      .filter(function () {
-        return $(this).text().trim() === '' && $(this).find('img').length === 0;
-      })
-      .remove();
+    $content.find('script, style, noscript').remove();
+    // Keep iframes (might be videos)
   }
 
   const html = $content ? $content.html() || '' : '';
   return { title, html };
 }
 
-async function processHtml(
+function processHtml(
   html: string,
   pageUrl: string
-): Promise<{ title: string; html: string }> {
+): { title: string; html: string; discoveredUrls: string[] } {
   const $ = cheerio.load(html);
+  const discoveredUrls: string[] = [];
 
   // Collect internal links for crawling
   $('a[href]').each((_, el) => {
     const href = $(el).attr('href');
     if (href) {
       const normalized = normalizeUrl(href, pageUrl);
-      if (
-        normalized &&
-        !visitedUrls.has(normalized) &&
-        !shouldSkipUrl(normalized)
-      ) {
-        if (!urlQueue.includes(normalized)) {
-          urlQueue.push(normalized);
+      if (normalized && shouldCrawlUrl(normalized)) {
+        if (!visitedUrls.has(normalized) && !discoveredUrls.includes(normalized)) {
+          discoveredUrls.push(normalized);
         }
       }
     }
@@ -252,38 +216,78 @@ async function processHtml(
   $content('a[href]').each((_, el) => {
     const href = $content(el).attr('href');
     if (href) {
-      const normalized = normalizeUrl(href, pageUrl);
-      if (normalized) {
-        const parsed = new URL(normalized);
-        const newHref = '/lplpf' + parsed.pathname;
-        $content(el).attr('href', newHref);
+      try {
+        const parsed = new URL(href, pageUrl);
+        // Only transform iplpf.org links
+        if (
+          parsed.hostname === 'www.iplpf.org' ||
+          parsed.hostname === 'iplpf.org'
+        ) {
+          // Skip file downloads (PDF, etc) - keep original URL
+          if (parsed.pathname.match(/\.(pdf|doc|docx|xls|xlsx)$/i)) {
+            $content(el).attr('href', parsed.href);
+          } else {
+            const newHref = '/lplpf' + parsed.pathname;
+            $content(el).attr('href', newHref);
+          }
+        }
+      } catch {
+        // Keep original href if parsing fails
       }
     }
   });
 
-  // Process images - download and update src
-  const images = $content('img[src]').toArray();
-  for (const img of images) {
+  // Process images - convert relative to absolute URLs (NO DOWNLOAD)
+  $content('img[src]').each((_, img) => {
     const src = $content(img).attr('src');
     if (src) {
-      let fullUrl: string;
       try {
-        fullUrl = new URL(src, pageUrl).href;
+        // Convert to absolute URL
+        const absoluteUrl = new URL(src, pageUrl).href;
+        $content(img).attr('src', absoluteUrl);
       } catch {
-        continue;
-      }
-
-      // Only download images from iplpf.org
-      if (fullUrl.includes('iplpf.org')) {
-        const localPath = await downloadAsset(fullUrl);
-        if (localPath) {
-          $content(img).attr('src', localPath);
-        }
+        // Keep original src if parsing fails
       }
     }
-  }
+    // Also handle srcset
+    const srcset = $content(img).attr('srcset');
+    if (srcset) {
+      const newSrcset = srcset
+        .split(',')
+        .map((part) => {
+          const [url, descriptor] = part.trim().split(/\s+/);
+          try {
+            const absoluteUrl = new URL(url, pageUrl).href;
+            return descriptor ? `${absoluteUrl} ${descriptor}` : absoluteUrl;
+          } catch {
+            return part;
+          }
+        })
+        .join(', ');
+      $content(img).attr('srcset', newSrcset);
+    }
+  });
 
-  return { title, html: $content.html() || '' };
+  // Process background images in style attributes
+  $content('[style*="background"]').each((_, el) => {
+    const style = $content(el).attr('style');
+    if (style) {
+      const newStyle = style.replace(
+        /url\(['"]?([^'")\s]+)['"]?\)/g,
+        (match, url) => {
+          try {
+            const absoluteUrl = new URL(url, pageUrl).href;
+            return `url('${absoluteUrl}')`;
+          } catch {
+            return match;
+          }
+        }
+      );
+      $content(el).attr('style', newStyle);
+    }
+  });
+
+  return { title, html: $content.html() || '', discoveredUrls };
 }
 
 async function crawlPage(url: string): Promise<PageData | null> {
@@ -295,12 +299,20 @@ async function crawlPage(url: string): Promise<PageData | null> {
     return null;
   }
 
-  const { title, html: processedHtml } = await processHtml(html, url);
+  const { title, html: processedHtml, discoveredUrls } = processHtml(html, url);
+
+  // Add discovered URLs to queue
+  for (const discovered of discoveredUrls) {
+    if (!visitedUrls.has(discovered) && !urlQueue.includes(discovered)) {
+      urlQueue.push(discovered);
+    }
+  }
+
   const parsed = new URL(url);
 
   return {
     sourceUrl: url,
-    path: parsed.pathname,
+    path: parsed.pathname + parsed.search,
     slug: urlToSlug(url),
     title,
     html: processedHtml,
@@ -319,8 +331,10 @@ async function collectUrlsFromSitemap(): Promise<void> {
       const href = $(el).attr('href');
       if (href) {
         const normalized = normalizeUrl(href);
-        if (normalized && !shouldSkipUrl(normalized)) {
-          urlQueue.push(normalized);
+        if (normalized && shouldCrawlUrl(normalized)) {
+          if (!urlQueue.includes(normalized)) {
+            urlQueue.push(normalized);
+          }
         }
       }
     });
@@ -339,6 +353,8 @@ async function collectUrlsFromSitemap(): Promise<void> {
     '/supporter/',
     '/one-time-donation/',
     '/monthly-donation/',
+    '/privacy-policy/',
+    '/site-map/',
   ];
 
   for (const page of knownPages) {
@@ -352,28 +368,75 @@ async function collectUrlsFromSitemap(): Promise<void> {
 }
 
 async function collectUrlsFromBlogList(): Promise<void> {
-  console.log('Fetching blog list...');
-  const blogUrl = `${BASE_URL}/blog-list/`;
-  const html = await fetchWithRetry(blogUrl);
+  console.log('Fetching blog list and pagination...');
 
-  if (html) {
-    const $ = cheerio.load(html);
-    $('a[href]').each((_, el) => {
-      const href = $(el).attr('href');
-      if (href) {
-        const normalized = normalizeUrl(href);
-        if (
-          normalized &&
-          !shouldSkipUrl(normalized) &&
-          !urlQueue.includes(normalized)
-        ) {
-          urlQueue.push(normalized);
+  // Fetch main blog list and multiple pagination pages
+  const blogPages = [
+    `${BASE_URL}/blog-list/`,
+    `${BASE_URL}/blog-list/page/2/`,
+    `${BASE_URL}/blog-list/page/3/`,
+    `${BASE_URL}/blog-list/page/4/`,
+    `${BASE_URL}/blog-list/page/5/`,
+  ];
+
+  for (const blogUrl of blogPages) {
+    const html = await fetchWithRetry(blogUrl);
+    if (html) {
+      const $ = cheerio.load(html);
+      $('a[href]').each((_, el) => {
+        const href = $(el).attr('href');
+        if (href) {
+          const normalized = normalizeUrl(href);
+          if (
+            normalized &&
+            shouldCrawlUrl(normalized) &&
+            !urlQueue.includes(normalized)
+          ) {
+            urlQueue.push(normalized);
+          }
         }
-      }
-    });
+      });
+    }
+    await new Promise((r) => setTimeout(r, 300));
   }
 
   console.log(`Total URLs after blog list: ${urlQueue.length}`);
+}
+
+async function collectUrlsFromCategories(): Promise<void> {
+  console.log('Fetching category pages...');
+
+  // Common WordPress category slugs
+  const categoryPaths = [
+    '/category/news/',
+    '/category/event/',
+    '/category/report/',
+    '/category/uncategorized/',
+  ];
+
+  for (const catPath of categoryPaths) {
+    const catUrl = `${BASE_URL}${catPath}`;
+    const html = await fetchWithRetry(catUrl);
+    if (html) {
+      const $ = cheerio.load(html);
+      $('a[href]').each((_, el) => {
+        const href = $(el).attr('href');
+        if (href) {
+          const normalized = normalizeUrl(href);
+          if (
+            normalized &&
+            shouldCrawlUrl(normalized) &&
+            !urlQueue.includes(normalized)
+          ) {
+            urlQueue.push(normalized);
+          }
+        }
+      });
+    }
+    await new Promise((r) => setTimeout(r, 300));
+  }
+
+  console.log(`Total URLs after categories: ${urlQueue.length}`);
 }
 
 function savePageData(page: PageData): void {
@@ -390,21 +453,24 @@ function savePagesIndex(): void {
     })),
     lastSync: new Date().toISOString(),
   };
-  fs.writeFileSync(path.join(CONTENT_DIR, 'pages.json'), JSON.stringify(index, null, 2));
+  fs.writeFileSync(
+    path.join(CONTENT_DIR, 'pages.json'),
+    JSON.stringify(index, null, 2)
+  );
 }
 
 async function main(): Promise<void> {
   console.log('='.repeat(50));
-  console.log('IPLPF Content Sync');
+  console.log('IPLPF Content Sync (No Image Download)');
   console.log('='.repeat(50));
 
   // Ensure directories exist
   fs.mkdirSync(PAGES_DIR, { recursive: true });
-  fs.mkdirSync(ASSETS_DIR, { recursive: true });
 
-  // Collect URLs
+  // Collect URLs from various sources
   await collectUrlsFromSitemap();
   await collectUrlsFromBlogList();
+  await collectUrlsFromCategories();
 
   // Deduplicate
   const uniqueUrls = [...new Set(urlQueue)];
@@ -413,7 +479,7 @@ async function main(): Promise<void> {
   // Create rate limiter
   const limit = pLimit(CONCURRENCY);
 
-  // Process URLs
+  // Process initial URLs
   let processed = 0;
   const tasks = uniqueUrls.map((url) =>
     limit(async () => {
@@ -438,8 +504,9 @@ async function main(): Promise<void> {
 
   await Promise.all(tasks);
 
-  // Process any newly discovered URLs
-  while (urlQueue.length > 0) {
+  // Process any newly discovered URLs (from crawled pages)
+  let additionalProcessed = 0;
+  while (urlQueue.length > 0 && additionalProcessed < 200) {
     const url = urlQueue.shift()!;
     if (visitedUrls.has(url)) continue;
     visitedUrls.add(url);
@@ -450,6 +517,7 @@ async function main(): Promise<void> {
       savePageData(pageData);
     }
 
+    additionalProcessed++;
     await new Promise((r) => setTimeout(r, 500));
   }
 
@@ -461,12 +529,16 @@ async function main(): Promise<void> {
   console.log('Sync Complete!');
   console.log('='.repeat(50));
   console.log(`Pages crawled: ${pages.length}`);
-  console.log(`Assets downloaded: ${assetCache.size}`);
   console.log(`Failed URLs: ${failedUrls.length}`);
   if (failedUrls.length > 0) {
     console.log('Failed URLs:');
-    failedUrls.forEach((url) => console.log(`  - ${url}`));
+    failedUrls.slice(0, 20).forEach((url) => console.log(`  - ${url}`));
+    if (failedUrls.length > 20) {
+      console.log(`  ... and ${failedUrls.length - 20} more`);
+    }
   }
+  console.log(`\nPages saved to: ${PAGES_DIR}`);
+  console.log(`Index saved to: ${CONTENT_DIR}/pages.json`);
 }
 
 main().catch(console.error);
