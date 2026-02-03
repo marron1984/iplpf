@@ -196,16 +196,21 @@ export default function Home() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
-            {['ホーム', '活動内容', 'お知らせ', 'お問い合わせ'].map((item) => (
+            {[
+              { label: 'ホーム', href: '/' },
+              { label: '活動内容', href: '/activities' },
+              { label: 'お知らせ', href: '/news' },
+              { label: 'お問い合わせ', href: '/contact' },
+            ].map((item) => (
               <Link
-                key={item}
-                href="#"
+                key={item.label}
+                href={item.href}
                 className={cn(
                   'text-sm font-medium transition-colors',
                   isScrolled ? 'text-stone-600 hover:text-stone-900' : 'text-white/80 hover:text-white'
                 )}
               >
-                {item}
+                {item.label}
               </Link>
             ))}
             <Link href="/donate">
@@ -244,13 +249,18 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden bg-white border-t border-stone-100 px-4 py-4"
           >
-            {['ホーム', '活動内容', 'お知らせ', 'お問い合わせ'].map((item) => (
+            {[
+              { label: 'ホーム', href: '/' },
+              { label: '活動内容', href: '/activities' },
+              { label: 'お知らせ', href: '/news' },
+              { label: 'お問い合わせ', href: '/contact' },
+            ].map((item) => (
               <Link
-                key={item}
-                href="#"
+                key={item.label}
+                href={item.href}
                 className="block py-3 text-stone-700 font-medium border-b border-stone-100"
               >
-                {item}
+                {item.label}
               </Link>
             ))}
             <Link href="/donate" className="block mt-4">
@@ -562,10 +572,8 @@ export default function Home() {
             <div>
               <h4 className="font-bold text-white mb-4">活動</h4>
               <ul className="space-y-2 text-sm text-stone-400">
-                <li><Link href="#" className="hover:text-white transition-colors">平和推進</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">国連活動支援</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">調査研究・提言</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">支援活動</Link></li>
+                <li><Link href="/activities" className="hover:text-white transition-colors">活動内容</Link></li>
+                <li><Link href="/news" className="hover:text-white transition-colors">お知らせ</Link></li>
               </ul>
             </div>
 
@@ -573,17 +581,14 @@ export default function Home() {
               <h4 className="font-bold text-white mb-4">寄付</h4>
               <ul className="space-y-2 text-sm text-stone-400">
                 <li><Link href="/donate" className="hover:text-white transition-colors">寄付する</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">寄付金取扱規程</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">よくあるご質問</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-bold text-white mb-4">情報</h4>
               <ul className="space-y-2 text-sm text-stone-400">
-                <li><Link href="#" className="hover:text-white transition-colors">団体概要</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">プライバシーポリシー</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">お問い合わせ</Link></li>
+                <li><Link href="/about" className="hover:text-white transition-colors">団体概要</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">お問い合わせ</Link></li>
               </ul>
             </div>
           </div>
