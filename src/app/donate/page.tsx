@@ -2,7 +2,6 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DonationFrequency,
@@ -12,37 +11,31 @@ import {
 import { AMOUNT_CHIPS, PURPOSE_LABELS, FREQUENCY_LABELS } from '@/lib/donate/constants';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import {
+  OFFICIAL_LOGO_URL,
+  HEADER_LOGO_URL,
+  HERO_URL,
+  MISSION_URL,
+  SDGS_URL,
+  NOTO_URL,
+} from '@/lib/iplpfAssets';
 
-// Image URLs - All activity images
+// Activity images for carousel/gallery
 const IMAGES = {
-  logo: 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマークOL_20260119-768x454.png',
-  activities: 'https://iplpf.org/wp-content/uploads/2026/01/P-LPIの主な活動内容-1536x1143.png',
-  cambodia1: 'https://iplpf.org/wp-content/uploads/2026/01/カンボジアIMG_0269.jpg',
-  cambodia2: 'https://iplpf.org/wp-content/uploads/2026/01/カンボジアバンザイ_0258.png',
-  cambodia3: 'https://iplpf.org/wp-content/uploads/2025/10/カンボジアIMG_0267.jpg',
-  cambodia4: 'https://iplpf.org/wp-content/uploads/2025/10/IMG-2962-768x576.jpg',
-  philippines: 'https://iplpf.org/wp-content/uploads/2026/01/フィリピン男の子-768x576.png',
-  myanmar1: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー2-768x432.png',
-  myanmar2: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー3-768x432.png',
-  myanmar3: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー5-768x557.png',
+  activities: MISSION_URL,
+  hero: HERO_URL,
+  sdgs: SDGS_URL,
+  noto: NOTO_URL,
 };
 
-// Hero carousel images
-const HERO_IMAGES = [
-  { src: IMAGES.cambodia2, alt: 'カンボジアの子どもたち' },
-  { src: IMAGES.philippines, alt: 'フィリピンの男の子' },
-  { src: IMAGES.myanmar1, alt: 'ミャンマーでの活動' },
-  { src: IMAGES.cambodia1, alt: 'カンボジアでの支援活動' },
-];
-
-// Gallery images for mosaic
+// Gallery images for display (using official images)
 const GALLERY_IMAGES = [
-  { src: IMAGES.cambodia1, alt: 'カンボジア支援' },
-  { src: IMAGES.philippines, alt: 'フィリピン支援' },
-  { src: IMAGES.myanmar2, alt: 'ミャンマー支援' },
-  { src: IMAGES.cambodia3, alt: 'カンボジアの笑顔' },
-  { src: IMAGES.myanmar3, alt: 'ミャンマーの子どもたち' },
-  { src: IMAGES.cambodia4, alt: '教育支援活動' },
+  { src: HERO_URL, alt: 'PLP財団活動' },
+  { src: MISSION_URL, alt: 'めざすもの' },
+  { src: SDGS_URL, alt: 'SDGs取り組み' },
+  { src: NOTO_URL, alt: '能登支援活動' },
+  { src: HERO_URL, alt: '平和活動' },
+  { src: MISSION_URL, alt: 'ミッション' },
 ];
 
 // Animation variants
@@ -207,54 +200,18 @@ function PurposeSelector({
   );
 }
 
-// Hero Image Carousel
-function HeroCarousel() {
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
+// Hero Background (single image)
+function HeroBackground() {
   return (
     <div className="absolute inset-0">
-      {HERO_IMAGES.map((img, i) => (
-        <motion.div
-          key={i}
-          className="absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: i === current ? 1 : 0 }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
-        >
-          <Image
-            src={img.src}
-            alt={img.alt}
-            fill
-            className="object-cover"
-            priority={i === 0}
-            sizes="100vw"
-          />
-        </motion.div>
-      ))}
+      <img
+        src={HERO_URL}
+        alt="PLP財団 トップイメージ"
+        className="w-full h-full object-cover"
+      />
       {/* Gradient overlays */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#FFFBF5] via-transparent to-transparent" />
-
-      {/* Carousel indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {HERO_IMAGES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={cn(
-              'w-2 h-2 rounded-full transition-all duration-300',
-              i === current ? 'w-8 bg-white' : 'bg-white/50 hover:bg-white/75'
-            )}
-          />
-        ))}
-      </div>
     </div>
   );
 }
@@ -277,12 +234,10 @@ function PhotoGrid() {
           transition={{ delay: i * 0.1, duration: 0.6 }}
           whileHover={{ scale: 1.02 }}
         >
-          <Image
+          <img
             src={img.src}
             alt={img.alt}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 50vw, 33vw"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
         </motion.div>
@@ -347,16 +302,14 @@ function DonatePageContent() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 relative">
-              <Image
-                src={IMAGES.logo}
-                alt="PLP財団"
-                fill
-                className="object-contain"
-                sizes="40px"
-              />
-            </div>
+          <a href="/" className="inline-flex items-center gap-2 md:gap-3">
+            <img
+              src={HEADER_LOGO_URL}
+              alt="国際P-LP財団 公式ロゴ"
+              className="h-8 md:h-10 w-auto object-contain"
+              loading="eager"
+              decoding="async"
+            />
             <span className="font-bold text-stone-900 tracking-tight text-sm md:text-base">PLP財団</span>
           </a>
           <Button variant="primary" size="sm" onClick={scrollToForm} className="bg-gradient-to-r from-amber-500 to-orange-500 border-0 text-sm px-4 py-2">
@@ -368,7 +321,7 @@ function DonatePageContent() {
       <main className="pt-14 md:pt-16">
         {/* Hero Section with Image Carousel */}
         <section className="relative h-[85vh] md:h-[90vh] flex items-center overflow-hidden">
-          <HeroCarousel />
+          <HeroBackground />
 
           <motion.div
             className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center"
@@ -660,12 +613,10 @@ function DonatePageContent() {
               className="mb-12 md:mb-16 rounded-3xl overflow-hidden shadow-xl bg-white"
             >
               <div className="relative aspect-[4/3] md:aspect-[16/9]">
-                <Image
+                <img
                   src={IMAGES.activities}
                   alt="P-LPIの主な活動内容"
-                  fill
-                  className="object-contain bg-white p-4"
-                  sizes="(max-width: 768px) 100vw, 1200px"
+                  className="w-full h-full object-contain bg-white p-4"
                 />
               </div>
             </motion.div>
@@ -772,13 +723,12 @@ function DonatePageContent() {
           >
             <motion.div
               variants={fadeUp}
-              className="relative w-20 h-20 md:w-24 md:h-24 mx-auto mb-6"
+              className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 rounded-full overflow-hidden ring-4 ring-white/30"
             >
-              <Image
-                src={IMAGES.cambodia2}
+              <img
+                src={HERO_URL}
                 alt="子どもたちの笑顔"
-                fill
-                className="object-cover rounded-full ring-4 ring-white/30"
+                className="w-full h-full object-cover"
               />
             </motion.div>
             <motion.h2
@@ -809,17 +759,25 @@ function DonatePageContent() {
       {/* Footer */}
       <footer className="bg-stone-900 py-10 md:py-12">
         <div className="max-w-5xl mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+          {/* Footer Logo */}
+          <div className="flex justify-center mb-8">
+            <a href="/" className="inline-flex items-center">
+              <img
+                src={OFFICIAL_LOGO_URL}
+                alt="国際P-LP財団 公式ロゴ"
+                className="h-12 md:h-16 w-auto max-w-[360px] object-contain"
+                loading="eager"
+                decoding="async"
+              />
+            </a>
+          </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 border-t border-stone-800 pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 relative">
-                <Image
-                  src={IMAGES.logo}
-                  alt="PLP財団"
-                  fill
-                  className="object-contain brightness-0 invert"
-                  sizes="32px"
-                />
-              </div>
+              <img
+                src={HEADER_LOGO_URL}
+                alt="国際P-LP財団 公式ロゴ"
+                className="h-8 w-auto object-contain brightness-0 invert"
+              />
               <span className="text-white/80 font-medium">PLP財団</span>
             </div>
             <p className="text-stone-500 text-sm">

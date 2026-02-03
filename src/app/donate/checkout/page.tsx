@@ -3,7 +3,6 @@
 import { useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Button from '@/components/ui/Button';
@@ -15,9 +14,7 @@ import {
   CreateCheckoutSessionRequest,
 } from '@/lib/donate/types';
 import { MIN_AMOUNT, MAX_AMOUNT, FREQUENCY_LABELS, PURPOSE_LABELS, DONOR_TYPE_LABELS } from '@/lib/donate/constants';
-
-// Logo URL
-const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマークOL_20260119-768x454.png';
+import { HEADER_LOGO_URL } from '@/lib/iplpfAssets';
 
 // Animation variants
 const fadeUp = {
@@ -243,16 +240,14 @@ function CheckoutPageContent() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 relative">
-              <Image
-                src={LOGO_URL}
-                alt="PLP財団"
-                fill
-                className="object-contain"
-                sizes="40px"
-              />
-            </div>
+          <Link href="/" className="inline-flex items-center gap-2 md:gap-3">
+            <img
+              src={HEADER_LOGO_URL}
+              alt="国際P-LP財団 公式ロゴ"
+              className="h-8 md:h-10 w-auto object-contain"
+              loading="eager"
+              decoding="async"
+            />
             <span className="font-bold text-stone-900 tracking-tight text-sm md:text-base">PLP財団</span>
           </Link>
           <Link href="/donate" className="text-sm text-stone-500 hover:text-stone-900 transition-colors">

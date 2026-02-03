@@ -2,17 +2,13 @@
 
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Suspense, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Button from '@/components/ui/Button';
 import { trackEvent } from '@/lib/analytics';
 import { ANALYTICS_EVENTS } from '@/lib/donate/constants';
-
-// Logo and activity images
-const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマークOL_20260119-768x454.png';
-const ACTIVITY_IMAGE = 'https://iplpf.org/wp-content/uploads/2026/01/カンボジアバンザイ_0258.png';
+import { HEADER_LOGO_URL, HERO_URL } from '@/lib/iplpfAssets';
 
 // Floating particle component
 function Particle({ delay, duration, x, size }: { delay: number; duration: number; x: number; size: number }) {
@@ -164,16 +160,14 @@ function ThanksPageContent() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 relative">
-              <Image
-                src={LOGO_URL}
-                alt="PLP財団"
-                fill
-                className="object-contain"
-                sizes="40px"
-              />
-            </div>
+          <Link href="/" className="inline-flex items-center gap-2 md:gap-3">
+            <img
+              src={HEADER_LOGO_URL}
+              alt="国際P-LP財団 公式ロゴ"
+              className="h-8 md:h-10 w-auto object-contain"
+              loading="eager"
+              decoding="async"
+            />
             <span className="font-bold text-stone-900 tracking-tight text-sm md:text-base">PLP財団</span>
           </Link>
         </div>
@@ -215,14 +209,12 @@ function ThanksPageContent() {
             <motion.div
               variants={fadeUp}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8 rounded-full overflow-hidden ring-4 ring-amber-200 shadow-xl"
+              className="w-32 h-32 md:w-40 md:h-40 mx-auto mb-8 rounded-full overflow-hidden ring-4 ring-amber-200 shadow-xl"
             >
-              <Image
-                src={ACTIVITY_IMAGE}
+              <img
+                src={HERO_URL}
                 alt="支援活動の様子"
-                fill
-                className="object-cover"
-                sizes="160px"
+                className="w-full h-full object-cover"
               />
             </motion.div>
 
