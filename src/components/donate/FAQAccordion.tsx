@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 import { FAQ_ITEMS } from '@/lib/donate/constants';
 
 interface FAQItemProps {
@@ -12,22 +13,25 @@ interface FAQItemProps {
 
 function FAQItem({ question, answer, isOpen, onToggle }: FAQItemProps) {
   return (
-    <div className="border-b border-gray-200 last:border-b-0">
+    <div className="border-b border-slate-100 last:border-b-0">
       <button
         type="button"
         onClick={onToggle}
-        className="w-full py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+        className="w-full py-5 flex items-center justify-between text-left group"
       >
-        <span className="text-base font-medium text-gray-900 pr-4">
+        <span className="text-base font-medium text-slate-900 pr-4 group-hover:text-sky-600 transition-colors">
           {question}
         </span>
         <span
-          className={`flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={cn(
+            'flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300',
+            isOpen
+              ? 'bg-sky-100 text-sky-600 rotate-180'
+              : 'bg-slate-100 text-slate-400 group-hover:bg-sky-50 group-hover:text-sky-500'
+          )}
         >
           <svg
-            className="w-4 h-4 text-gray-500"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -42,30 +46,42 @@ function FAQItem({ question, answer, isOpen, onToggle }: FAQItemProps) {
         </span>
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? 'max-h-96 pb-4' : 'max-h-0'
-        }`}
+        className={cn(
+          'overflow-hidden transition-all duration-300 ease-in-out',
+          isOpen ? 'max-h-96 opacity-100 pb-5' : 'max-h-0 opacity-0'
+        )}
       >
-        <p className="text-gray-600 leading-relaxed pr-10">{answer}</p>
+        <p className="text-slate-600 leading-relaxed pr-12 pl-0">
+          {answer}
+        </p>
       </div>
     </div>
   );
 }
 
-export default function FAQAccordion() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+interface FAQAccordionProps {
+  className?: string;
+}
+
+export default function FAQAccordion({ className }: FAQAccordionProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <section className="py-12 md:py-16">
+    <section className={cn('py-16 md:py-24', className)}>
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">
-          よくあるご質問
-        </h2>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight mb-4">
+            よくあるご質問
+          </h2>
+          <p className="text-lg text-slate-600">
+            寄付に関するご不明点にお答えします
+          </p>
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 px-6 md:px-8">
           {FAQ_ITEMS.map((item, index) => (
             <FAQItem
               key={index}

@@ -1,9 +1,15 @@
 'use client';
 
+import { cn } from '@/lib/utils';
+import { FREQUENCY_LABELS } from '@/lib/donate/constants';
+import { DonationFrequency } from '@/lib/donate/types';
+import Button from '@/components/ui/Button';
+
 interface StickyBottomCTAProps {
   label?: string;
   onClick: () => void;
   amount?: number;
+  frequency?: DonationFrequency;
   className?: string;
 }
 
@@ -11,28 +17,40 @@ export default function StickyBottomCTA({
   label = '今すぐ寄付する',
   onClick,
   amount,
+  frequency = 'one_time',
   className = '',
 }: StickyBottomCTAProps) {
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-50 ${className}`}
+      className={cn(
+        'fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200 p-4 md:hidden z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]',
+        className
+      )}
     >
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto flex items-center gap-4">
+        {/* 選択情報 */}
         {amount && amount > 0 && (
-          <p className="text-center text-sm text-gray-600 mb-2">
-            <span className="font-bold text-blue-600">
-              {amount.toLocaleString()}円
-            </span>
-            を寄付
-          </p>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-slate-500 truncate">
+              {FREQUENCY_LABELS[frequency]}
+            </p>
+            <p className="text-lg font-bold text-slate-900">
+              ¥{amount.toLocaleString()}
+              {frequency === 'monthly' && (
+                <span className="text-sm font-normal text-slate-500">/月</span>
+              )}
+            </p>
+          </div>
         )}
-        <button
-          type="button"
+        {/* CTAボタン */}
+        <Button
+          variant="primary"
+          size="lg"
           onClick={onClick}
-          className="w-full py-3.5 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors"
+          className={cn(amount && amount > 0 ? 'flex-shrink-0' : 'w-full')}
         >
           {label}
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,60 +1,62 @@
 'use client';
 
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
+
 interface FeaturedTopicProps {
   title?: string;
   description?: string;
   imageUrl?: string;
   linkUrl?: string;
+  className?: string;
 }
 
 export default function FeaturedTopic({
   title = '今月の注力テーマ',
-  description = '現在、国連総会に向けた政策提言活動に注力しています。平和構築に関する調査研究をもとに、実効性のある提言を行うための準備を進めています。',
-  imageUrl = '/featured-topic.jpg',
+  description = '現在、国連総会に向けた政策提言活動に注力しています。平和構築に関する調査研究をもとに、実効性のある提言を行うための準備を進めています。皆様のご支援が、世界の平和構築に直接貢献します。',
+  imageUrl = '/images/feature.svg',
   linkUrl = '#',
+  className,
 }: FeaturedTopicProps) {
   return (
-    <section className="py-12 md:py-16 bg-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">
-          {title}
-        </h2>
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
+    <section className={cn('py-16 md:py-24 bg-slate-50', className)}>
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight mb-4">
+            {title}
+          </h2>
+        </div>
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm ring-1 ring-slate-200/60 hover:shadow-lg transition-shadow duration-300">
           <div className="md:flex">
-            <div className="md:w-2/5 bg-gray-200 min-h-[200px] md:min-h-[280px] flex items-center justify-center">
-              {/* プレースホルダー画像 */}
-              <div className="text-gray-400 text-center p-4">
-                <svg
-                  className="w-16 h-16 mx-auto mb-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <span className="text-sm">画像を設定予定</span>
-              </div>
+            {/* 画像 */}
+            <div className="md:w-1/2 relative min-h-[240px] md:min-h-[320px]">
+              <Image
+                src={imageUrl}
+                alt="今月の注力テーマ"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-600/20 to-transparent" />
             </div>
-            <div className="md:w-3/5 p-6 md:p-8">
-              <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mb-4">
+            {/* コンテンツ */}
+            <div className="md:w-1/2 p-8 md:p-10 flex flex-col justify-center">
+              <span className="inline-flex items-center self-start px-3 py-1.5 bg-sky-100 text-sky-700 text-xs font-semibold rounded-full mb-4">
+                <span className="w-1.5 h-1.5 bg-sky-500 rounded-full mr-2" />
                 国連活動支援
               </span>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl md:text-2xl font-semibold text-slate-900 mb-4 tracking-tight">
                 国連総会に向けた政策提言活動
               </h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">{description}</p>
+              <p className="text-slate-600 mb-6 leading-relaxed">
+                {description}
+              </p>
               <a
                 href={linkUrl}
-                className="inline-flex items-center text-blue-600 font-medium hover:text-blue-700 transition-colors"
+                className="inline-flex items-center text-sky-600 font-semibold hover:text-sky-700 transition-colors group"
               >
                 詳しく見る
                 <svg
-                  className="w-4 h-4 ml-1"
+                  className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -63,7 +65,7 @@ export default function FeaturedTopic({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M9 5l7 7-7 7"
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
                   />
                 </svg>
               </a>

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import {
   DonationFrequency,
   DonationPurpose,
@@ -10,21 +11,34 @@ import {
 import {
   AMOUNT_CHIPS,
   FREQUENCY_LABELS,
-  PURPOSE_LABELS,
   MIN_AMOUNT,
   MAX_AMOUNT,
   ANALYTICS_EVENTS,
 } from '@/lib/donate/constants';
 import { trackEvent } from '@/lib/analytics';
+import SegmentedControl from '@/components/ui/SegmentedControl';
+import AmountChip from '@/components/ui/AmountChip';
+import PurposeTile from '@/components/ui/PurposeTile';
+import Button from '@/components/ui/Button';
+
+const PURPOSE_OPTIONS = [
+  { value: 'none' as const, label: '指定なし', icon: '💝' },
+  { value: 'peace' as const, label: '平和推進', icon: '🕊️' },
+  { value: 'un_support' as const, label: '国連支援', icon: '🌍' },
+  { value: 'research' as const, label: '調査研究', icon: '📊' },
+  { value: 'relief' as const, label: '支援活動', icon: '🤝' },
+];
 
 interface DonateCardProps {
   className?: string;
   initialSelection?: Partial<DonationSelection>;
+  onSelectionChange?: (selection: DonationSelection) => void;
 }
 
 export default function DonateCard({
   className = '',
   initialSelection,
+  onSelectionChange,
 }: DonateCardProps) {
   const router = useRouter();
   const [frequency, setFrequency] = useState<DonationFrequency>(
@@ -39,17 +53,37 @@ export default function DonateCard({
     initialSelection?.purpose ?? 'none'
   );
 
-  const handleFrequencyChange = useCallback((newFrequency: DonationFrequency) => {
-    setFrequency(newFrequency);
-    trackEvent(ANALYTICS_EVENTS.SELECT_FREQUENCY, { frequency: newFrequency });
-  }, []);
+  const notifySelectionChange = useCallback(
+    (newSelection: Partial<DonationSelection>) => {
+      const selection: DonationSelection = {
+        frequency: newSelection.frequency ?? frequency,
+        amount: newSelection.amount ?? amount,
+        purpose: newSelection.purpose ?? purpose,
+      };
+      onSelectionChange?.(selection);
+    },
+    [frequency, amount, purpose, onSelectionChange]
+  );
 
-  const handleAmountSelect = useCallback((newAmount: number) => {
-    setAmount(newAmount);
-    setIsCustomAmount(false);
-    setCustomAmount('');
-    trackEvent(ANALYTICS_EVENTS.SELECT_AMOUNT, { amount: newAmount });
-  }, []);
+  const handleFrequencyChange = useCallback(
+    (newFrequency: DonationFrequency) => {
+      setFrequency(newFrequency);
+      trackEvent(ANALYTICS_EVENTS.SELECT_FREQUENCY, { frequency: newFrequency });
+      notifySelectionChange({ frequency: newFrequency });
+    },
+    [notifySelectionChange]
+  );
+
+  const handleAmountSelect = useCallback(
+    (newAmount: number) => {
+      setAmount(newAmount);
+      setIsCustomAmount(false);
+      setCustomAmount('');
+      trackEvent(ANALYTICS_EVENTS.SELECT_AMOUNT, { amount: newAmount });
+      notifySelectionChange({ amount: newAmount });
+    },
+    [notifySelectionChange]
+  );
 
   const handleCustomAmountChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,21 +97,28 @@ export default function DonateCard({
           amount: numValue,
           custom: true,
         });
+        notifySelectionChange({ amount: numValue });
       }
     },
-    []
+    [notifySelectionChange]
   );
 
-  const handlePurposeChange = useCallback((newPurpose: DonationPurpose) => {
-    setPurpose(newPurpose);
-    trackEvent(ANALYTICS_EVENTS.SELECT_PURPOSE, { purpose: newPurpose });
-  }, []);
+  const handlePurposeChange = useCallback(
+    (newPurpose: DonationPurpose) => {
+      setPurpose(newPurpose);
+      trackEvent(ANALYTICS_EVENTS.SELECT_PURPOSE, { purpose: newPurpose });
+      notifySelectionChange({ purpose: newPurpose });
+    },
+    [notifySelectionChange]
+  );
 
   const handleSubmit = useCallback(() => {
     const finalAmount = isCustomAmount ? parseInt(customAmount, 10) : amount;
 
     if (!finalAmount || finalAmount < MIN_AMOUNT || finalAmount > MAX_AMOUNT) {
-      alert(`金額は${MIN_AMOUNT.toLocaleString()}円以上、${MAX_AMOUNT.toLocaleString()}円以下で入力してください`);
+      alert(
+        `金額は${MIN_AMOUNT.toLocaleString()}円以上、${MAX_AMOUNT.toLocaleString()}円以下で入力してください`
+      );
       return;
     }
 
@@ -102,146 +143,135 @@ export default function DonateCard({
       : 0
     : amount;
 
+  const frequencyOptions = [
+    { value: 'one_time' as const, label: FREQUENCY_LABELS.one_time },
+    { value: 'monthly' as const, label: FREQUENCY_LABELS.monthly },
+  ];
+
   return (
     <div
-      className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 ${className}`}
+      className={cn(
+        'bg-white rounded-2xl shadow-md ring-1 ring-slate-200/60 p-6 md:p-8',
+        className
+      )}
     >
-      <h3 className="text-lg font-bold text-gray-900 mb-4">寄付する</h3>
+      {/* ヘッダー */}
+      <div className="text-center mb-6">
+        <h3 className="text-xl font-semibold text-slate-900 tracking-tight">
+          寄付する
+        </h3>
+        <p className="text-sm text-slate-500 mt-1">
+          あなたの支援が平和を作ります
+        </p>
+      </div>
 
-      {/* 寄付タイプ選択 */}
-      <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          寄付タイプ
-        </label>
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden">
-          {(Object.keys(FREQUENCY_LABELS) as DonationFrequency[]).map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => handleFrequencyChange(key)}
-              className={`flex-1 py-2.5 px-4 text-sm font-medium transition-colors ${
-                frequency === key
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              {FREQUENCY_LABELS[key]}
-            </button>
-          ))}
-        </div>
+      {/* 寄付タイプ選択（セグメントUI） */}
+      <div className="mb-6">
+        <SegmentedControl
+          options={frequencyOptions}
+          value={frequency}
+          onChange={handleFrequencyChange}
+          className="w-full"
+        />
       </div>
 
       {/* 金額選択 */}
-      <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          金額
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-slate-700 mb-3">
+          金額を選択
         </label>
         <div className="grid grid-cols-2 gap-2 mb-3">
           {AMOUNT_CHIPS.map((chipAmount) => (
-            <button
+            <AmountChip
               key={chipAmount}
-              type="button"
+              amount={chipAmount}
+              selected={!isCustomAmount && amount === chipAmount}
               onClick={() => handleAmountSelect(chipAmount)}
-              className={`py-2.5 px-4 rounded-lg text-sm font-medium transition-colors border ${
-                !isCustomAmount && amount === chipAmount
-                  ? 'border-blue-600 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {chipAmount.toLocaleString()}円
-            </button>
+            />
           ))}
         </div>
         <div className="relative">
           <input
             type="text"
             inputMode="numeric"
-            placeholder="その他の金額"
+            placeholder="その他の金額を入力"
             value={customAmount}
             onChange={handleCustomAmountChange}
             onFocus={() => setIsCustomAmount(true)}
-            className={`w-full py-2.5 px-4 rounded-lg border text-sm transition-colors ${
+            className={cn(
+              'w-full h-11 px-4 rounded-xl border-2 text-sm transition-all duration-200',
+              'focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500',
               isCustomAmount && customAmount
-                ? 'border-blue-600 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                ? 'border-sky-500 bg-sky-50'
+                : 'border-slate-200 hover:border-slate-300'
+            )}
           />
           {customAmount && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-500">
               円
             </span>
           )}
         </div>
       </div>
 
-      {/* 使途選択 */}
+      {/* 使途選択（タイルUI） */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          使い道
+        <label className="block text-sm font-medium text-slate-700 mb-3">
+          使い道を選択
         </label>
-        <div className="space-y-2">
-          {(Object.keys(PURPOSE_LABELS) as DonationPurpose[]).map((key) => (
-            <label
-              key={key}
-              className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
-                purpose === key
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <input
-                type="radio"
-                name="purpose"
-                value={key}
-                checked={purpose === key}
-                onChange={() => handlePurposeChange(key)}
-                className="sr-only"
-              />
-              <span
-                className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
-                  purpose === key ? 'border-blue-600' : 'border-gray-300'
-                }`}
-              >
-                {purpose === key && (
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                )}
-              </span>
-              <span
-                className={`text-sm ${
-                  purpose === key ? 'text-blue-700 font-medium' : 'text-gray-700'
-                }`}
-              >
-                {PURPOSE_LABELS[key]}
-              </span>
-            </label>
+        <div className="grid grid-cols-3 gap-2">
+          {PURPOSE_OPTIONS.slice(0, 3).map((option) => (
+            <PurposeTile
+              key={option.value}
+              icon={option.icon}
+              label={option.label}
+              selected={purpose === option.value}
+              onClick={() => handlePurposeChange(option.value)}
+            />
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          {PURPOSE_OPTIONS.slice(3).map((option) => (
+            <PurposeTile
+              key={option.value}
+              icon={option.icon}
+              label={option.label}
+              selected={purpose === option.value}
+              onClick={() => handlePurposeChange(option.value)}
+            />
           ))}
         </div>
       </div>
 
       {/* 確認表示 */}
       {displayAmount > 0 && (
-        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600">
-            {FREQUENCY_LABELS[frequency]}：
-            <span className="font-bold text-gray-900">
-              {displayAmount.toLocaleString()}円
+        <div className="mb-6 p-4 bg-gradient-to-r from-sky-50 to-slate-50 rounded-xl border border-sky-100">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-slate-600">
+              {FREQUENCY_LABELS[frequency]}
             </span>
-            {frequency === 'monthly' && '/月'}
-          </p>
+            <span className="text-xl font-bold text-slate-900">
+              ¥{displayAmount.toLocaleString()}
+              {frequency === 'monthly' && (
+                <span className="text-sm font-normal text-slate-500">/月</span>
+              )}
+            </span>
+          </div>
         </div>
       )}
 
       {/* CTA */}
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="xl"
         onClick={handleSubmit}
         disabled={displayAmount < MIN_AMOUNT}
-        className="w-full py-3.5 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+        className="w-full"
       >
         今すぐ寄付する
-      </button>
+      </Button>
 
-      <p className="mt-3 text-xs text-gray-500 text-center">
+      <p className="mt-4 text-xs text-slate-400 text-center">
         次のページで詳細を入力いただきます
       </p>
     </div>
