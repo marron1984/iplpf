@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 // Logo URL from iplpf.org
-const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマークOL_20260119-768x454.png';
+const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/%E5%B7%A6%E4%B8%8A%E3%83%AD%E3%82%B4%E3%83%9E%E3%83%BC%E3%82%AF.png';
 
 // Navigation items
 const NAV_ITEMS = [
