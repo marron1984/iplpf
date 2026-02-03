@@ -5,9 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Logo URL
-const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/左上ロゴマーク.png';
 import { cn } from '@/lib/utils';
 import Button from '@/components/ui/Button';
 import {
@@ -19,14 +16,17 @@ import {
 } from '@/lib/donate/types';
 import { MIN_AMOUNT, MAX_AMOUNT, FREQUENCY_LABELS, PURPOSE_LABELS, DONOR_TYPE_LABELS } from '@/lib/donate/constants';
 
+// Logo URL
+const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマークOL_20260119-768x454.png';
+
 // Animation variants
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 },
 };
 
-// Input component with zen styling
-function ZenInput({
+// Input component
+function FormInput({
   label,
   required = false,
   error,
@@ -40,7 +40,7 @@ function ZenInput({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-stone-700">
+      <label className="block text-sm font-semibold text-stone-700">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -65,7 +65,7 @@ function ZenInput({
             error
               ? 'border-red-300 bg-red-50/50'
               : isFocused
-                ? 'border-stone-900 bg-white'
+                ? 'border-amber-500 bg-white ring-4 ring-amber-500/10'
                 : 'border-stone-200 bg-white hover:border-stone-300'
           )}
         />
@@ -87,7 +87,7 @@ function ZenInput({
 }
 
 // Textarea component
-function ZenTextarea({
+function FormTextarea({
   label,
   ...props
 }: {
@@ -97,7 +97,7 @@ function ZenTextarea({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-stone-700">
+      <label className="block text-sm font-semibold text-stone-700">
         {label}
         <span className="text-stone-400 font-normal ml-2">（任意）</span>
       </label>
@@ -120,7 +120,7 @@ function ZenTextarea({
             'transition-all duration-200 outline-none',
             'placeholder:text-stone-400',
             isFocused
-              ? 'border-stone-900 bg-white'
+              ? 'border-amber-500 bg-white ring-4 ring-amber-500/10'
               : 'border-stone-200 bg-white hover:border-stone-300'
           )}
         />
@@ -222,10 +222,10 @@ function CheckoutPageContent() {
   // 金額が無効な場合
   if (!amount || amount < MIN_AMOUNT) {
     return (
-      <div className="min-h-screen bg-[#FAFAF9] flex items-center justify-center">
+      <div className="min-h-screen bg-[#FFFBF5] flex items-center justify-center">
         <div className="text-center">
           <p className="text-stone-600 mb-4">寄付金額が設定されていません</p>
-          <Link href="/donate" className="text-indigo-600 hover:text-indigo-700 font-medium">
+          <Link href="/donate" className="text-amber-600 hover:text-amber-700 font-medium">
             寄付ページに戻る
           </Link>
         </div>
@@ -234,17 +234,17 @@ function CheckoutPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF9]">
+    <div className="min-h-screen bg-[#FFFBF5]">
       {/* Header */}
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 glass-subtle border-b border-stone-200/50"
+        className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-100"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 relative">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 relative">
               <Image
                 src={LOGO_URL}
                 alt="PLP財団"
@@ -253,7 +253,7 @@ function CheckoutPageContent() {
                 sizes="40px"
               />
             </div>
-            <span className="font-semibold text-stone-900 tracking-tight">PLP財団</span>
+            <span className="font-bold text-stone-900 tracking-tight text-sm md:text-base">PLP財団</span>
           </Link>
           <Link href="/donate" className="text-sm text-stone-500 hover:text-stone-900 transition-colors">
             キャンセル
@@ -261,19 +261,28 @@ function CheckoutPageContent() {
         </div>
       </motion.header>
 
-      <main className="pt-28 pb-20">
-        <div className="max-w-lg mx-auto px-6">
+      <main className="pt-24 md:pt-28 pb-20">
+        <div className="max-w-lg mx-auto px-4 md:px-6">
           {/* Progress */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-3 text-xs text-stone-400 mb-10"
+            className="flex items-center justify-center gap-2 md:gap-3 text-xs mb-8 md:mb-10"
           >
-            <span className="text-indigo-600 font-medium">1. 金額選択</span>
-            <span className="w-8 h-px bg-stone-300" />
-            <span className="text-stone-900 font-medium">2. 情報入力</span>
-            <span className="w-8 h-px bg-stone-300" />
-            <span>3. 決済</span>
+            <span className="flex items-center gap-1.5 text-amber-600 font-semibold">
+              <span className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">✓</span>
+              金額選択
+            </span>
+            <span className="w-6 md:w-8 h-px bg-amber-300" />
+            <span className="flex items-center gap-1.5 text-stone-900 font-semibold">
+              <span className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">2</span>
+              情報入力
+            </span>
+            <span className="w-6 md:w-8 h-px bg-stone-200" />
+            <span className="flex items-center gap-1.5 text-stone-400">
+              <span className="w-5 h-5 rounded-full bg-stone-200 text-stone-500 flex items-center justify-center text-xs">3</span>
+              決済
+            </span>
           </motion.div>
 
           {/* Title */}
@@ -282,12 +291,12 @@ function CheckoutPageContent() {
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-10"
+            className="text-center mb-8"
           >
-            <h1 className="text-display text-3xl md:text-4xl text-stone-900 mb-3">
-              情報を入力
+            <h1 className="text-2xl md:text-3xl font-bold text-stone-900 mb-2">
+              ご連絡先の入力
             </h1>
-            <p className="text-body">
+            <p className="text-stone-500 text-sm">
               決済はStripeを通じて安全に処理されます
             </p>
           </motion.div>
@@ -298,28 +307,30 @@ function CheckoutPageContent() {
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="bg-white rounded-2xl p-6 mb-8 shadow-sm"
+            className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-5 mb-6 text-white shadow-lg shadow-amber-500/20"
           >
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-stone-500 text-sm">寄付金額</span>
-              <Link href="/donate" className="text-indigo-600 text-sm hover:text-indigo-700">
-                変更
-              </Link>
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-white/80 text-sm">寄付金額</span>
+                <Link href="/donate" className="text-white/90 text-xs ml-2 underline hover:text-white">
+                  変更
+                </Link>
+              </div>
+              <div className="text-right">
+                <span className="text-3xl md:text-4xl font-bold">
+                  ¥{amount.toLocaleString()}
+                </span>
+                {frequency === 'monthly' && (
+                  <span className="text-white/80 text-sm ml-1">/月</span>
+                )}
+              </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-semibold text-stone-900">
-                ¥{amount.toLocaleString()}
-              </span>
-              {frequency === 'monthly' && (
-                <span className="text-stone-500">/月</span>
-              )}
-            </div>
-            <div className="flex gap-3 mt-4 pt-4 border-t border-stone-100">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-stone-100 text-xs text-stone-600">
+            <div className="flex gap-2 mt-4 pt-4 border-t border-white/20">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs">
                 {FREQUENCY_LABELS[frequency]}
               </span>
               {purpose !== 'none' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-xs text-indigo-600">
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs">
                   {PURPOSE_LABELS[purpose]}
                 </span>
               )}
@@ -332,26 +343,22 @@ function CheckoutPageContent() {
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="bg-white rounded-2xl p-6 md:p-8 shadow-sm"
+            className="bg-white rounded-2xl p-5 md:p-6 shadow-sm"
           >
-            <h2 className="text-heading text-lg text-stone-900 mb-6">
-              ご連絡先
-            </h2>
-
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Donor Type */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-stone-700">
+                <label className="block text-sm font-semibold text-stone-700">
                   寄付者の種類
                 </label>
-                <div className="flex p-1 bg-stone-100 rounded-xl">
+                <div className="flex p-1.5 bg-stone-100 rounded-xl">
                   {(['individual', 'corporate'] as const).map((type) => (
                     <motion.button
                       key={type}
                       type="button"
                       onClick={() => setDonorType(type)}
                       className={cn(
-                        'flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors relative',
+                        'flex-1 py-3 rounded-lg text-sm font-semibold transition-colors relative',
                         donorType === type ? 'text-white' : 'text-stone-600'
                       )}
                       whileTap={{ scale: 0.98 }}
@@ -359,7 +366,7 @@ function CheckoutPageContent() {
                       {donorType === type && (
                         <motion.div
                           layoutId="donorType-bg"
-                          className="absolute inset-0 bg-stone-900 rounded-lg"
+                          className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg"
                           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         />
                       )}
@@ -370,7 +377,7 @@ function CheckoutPageContent() {
               </div>
 
               {/* Name */}
-              <ZenInput
+              <FormInput
                 label={donorType === 'individual' ? 'お名前' : '法人名'}
                 required
                 placeholder={donorType === 'individual' ? '山田 太郎' : '株式会社〇〇'}
@@ -380,7 +387,7 @@ function CheckoutPageContent() {
               />
 
               {/* Email */}
-              <ZenInput
+              <FormInput
                 label="メールアドレス"
                 required
                 type="email"
@@ -389,12 +396,12 @@ function CheckoutPageContent() {
                 onChange={(e) => setEmail(e.target.value)}
                 error={errors.email}
               />
-              <p className="text-xs text-stone-400 -mt-4">
+              <p className="text-xs text-stone-400 -mt-3">
                 確認メールと領収書のご案内をお送りします
               </p>
 
               {/* Message */}
-              <ZenTextarea
+              <FormTextarea
                 label="応援メッセージ"
                 placeholder="応援メッセージがあればお書きください..."
                 rows={3}
@@ -410,17 +417,14 @@ function CheckoutPageContent() {
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-            className="mt-6 p-5 rounded-xl bg-stone-50 border border-stone-200"
+            className="mt-5 p-4 rounded-xl bg-white border border-stone-200"
           >
-            <div className="flex items-center gap-3 mb-3">
-              <svg className="w-5 h-5 text-stone-400" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-              </svg>
-              <span className="font-medium text-stone-700 text-sm">クレジットカード決済</span>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-lg">💳</span>
+              <span className="font-semibold text-stone-700 text-sm">クレジットカード決済</span>
             </div>
             <p className="text-xs text-stone-500 leading-relaxed">
               次のステップでカード情報を入力します。Visa, Mastercard, American Express, JCB対応。
-              決済情報は当サイトでは保存されません。
             </p>
           </motion.div>
 
@@ -431,7 +435,7 @@ function CheckoutPageContent() {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="mt-6 p-4 rounded-xl bg-red-50 border border-red-200"
+                className="mt-5 p-4 rounded-xl bg-red-50 border border-red-200"
               >
                 <p className="text-sm text-red-600">{submitError}</p>
               </motion.div>
@@ -444,7 +448,7 @@ function CheckoutPageContent() {
             animate="visible"
             variants={fadeUp}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-            className="mt-8"
+            className="mt-6"
           >
             <Button
               variant="primary"
@@ -452,9 +456,9 @@ function CheckoutPageContent() {
               onClick={handleSubmit}
               disabled={isSubmitting}
               isLoading={isSubmitting}
-              className="w-full"
+              className="w-full bg-stone-900 hover:bg-stone-800 border-0 py-4"
             >
-              決済に進む
+              決済に進む →
             </Button>
 
             <p className="mt-4 text-xs text-stone-400 text-center leading-relaxed">
@@ -465,20 +469,14 @@ function CheckoutPageContent() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-stone-200 py-8">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="flex items-center justify-center gap-6 text-xs text-stone-400">
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              SSL暗号化
+      <footer className="border-t border-stone-200 py-6 bg-white">
+        <div className="max-w-3xl mx-auto px-4 md:px-6">
+          <div className="flex items-center justify-center gap-4 md:gap-6 text-xs text-stone-400">
+            <span className="flex items-center gap-1.5">
+              🔒 SSL暗号化
             </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Powered by Stripe
+            <span className="flex items-center gap-1.5">
+              ⚡ Powered by Stripe
             </span>
           </div>
         </div>
@@ -491,9 +489,9 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#FAFAF9] flex items-center justify-center">
+        <div className="min-h-screen bg-[#FFFBF5] flex items-center justify-center">
           <motion.div
-            className="w-8 h-8 border-2 border-stone-200 border-t-stone-900 rounded-full"
+            className="w-10 h-10 border-3 border-amber-200 border-t-amber-500 rounded-full"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />

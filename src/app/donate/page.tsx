@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useRef, useState, useCallback } from 'react';
+import { Suspense, useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -13,12 +13,37 @@ import { AMOUNT_CHIPS, PURPOSE_LABELS, FREQUENCY_LABELS } from '@/lib/donate/con
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
-// Image URLs
+// Image URLs - All activity images
 const IMAGES = {
-  logo: 'https://iplpf.org/wp-content/uploads/2026/01/左上ロゴマーク.png',
-  hero: 'https://iplpf.org/wp-content/uploads/2026/01/HP_TOP画像-3-c-scaled.png',
-  pr: 'https://iplpf.org/wp-content/uploads/2023/06/pr.png',
+  logo: 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマークOL_20260119-768x454.png',
+  activities: 'https://iplpf.org/wp-content/uploads/2026/01/P-LPIの主な活動内容-1536x1143.png',
+  cambodia1: 'https://iplpf.org/wp-content/uploads/2026/01/カンボジアIMG_0269.jpg',
+  cambodia2: 'https://iplpf.org/wp-content/uploads/2026/01/カンボジアバンザイ_0258.png',
+  cambodia3: 'https://iplpf.org/wp-content/uploads/2025/10/カンボジアIMG_0267.jpg',
+  cambodia4: 'https://iplpf.org/wp-content/uploads/2025/10/IMG-2962-768x576.jpg',
+  philippines: 'https://iplpf.org/wp-content/uploads/2026/01/フィリピン男の子-768x576.png',
+  myanmar1: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー2-768x432.png',
+  myanmar2: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー3-768x432.png',
+  myanmar3: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー5-768x557.png',
 };
+
+// Hero carousel images
+const HERO_IMAGES = [
+  { src: IMAGES.cambodia2, alt: 'カンボジアの子どもたち' },
+  { src: IMAGES.philippines, alt: 'フィリピンの男の子' },
+  { src: IMAGES.myanmar1, alt: 'ミャンマーでの活動' },
+  { src: IMAGES.cambodia1, alt: 'カンボジアでの支援活動' },
+];
+
+// Gallery images for mosaic
+const GALLERY_IMAGES = [
+  { src: IMAGES.cambodia1, alt: 'カンボジア支援' },
+  { src: IMAGES.philippines, alt: 'フィリピン支援' },
+  { src: IMAGES.myanmar2, alt: 'ミャンマー支援' },
+  { src: IMAGES.cambodia3, alt: 'カンボジアの笑顔' },
+  { src: IMAGES.myanmar3, alt: 'ミャンマーの子どもたち' },
+  { src: IMAGES.cambodia4, alt: '教育支援活動' },
+];
 
 // Animation variants
 const fadeUp = {
@@ -50,36 +75,36 @@ function AmountCard({
     <motion.button
       onClick={onClick}
       className={cn(
-        'relative p-6 rounded-2xl text-left transition-all duration-300',
+        'relative p-5 md:p-6 rounded-2xl text-left transition-all duration-300',
         'border-2',
         isSelected
-          ? 'border-stone-900 bg-stone-900 text-white shadow-xl'
-          : 'border-stone-200 bg-white hover:border-stone-300 hover:shadow-lg'
+          ? 'border-amber-500 bg-amber-500 text-white shadow-xl shadow-amber-500/25'
+          : 'border-stone-200 bg-white hover:border-amber-300 hover:shadow-lg'
       )}
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
     >
       <span className={cn(
-        'text-2xl font-semibold tracking-tight',
+        'text-xl md:text-2xl font-bold tracking-tight',
         isSelected ? 'text-white' : 'text-stone-900'
       )}>
         ¥{amount.toLocaleString()}
       </span>
       {!isCustom && (
         <span className={cn(
-          'block text-sm mt-1',
-          isSelected ? 'text-white/70' : 'text-stone-500'
+          'block text-xs md:text-sm mt-1',
+          isSelected ? 'text-white/80' : 'text-stone-500'
         )}>
           {amount === 3000 && '気軽に始める'}
-          {amount === 5000 && '一番人気'}
+          {amount === 5000 && '一番人気 ⭐'}
           {amount === 10000 && 'しっかり支援'}
           {amount === 30000 && '大きな力に'}
         </span>
       )}
       {isSelected && (
         <motion.div
-          className="absolute top-3 right-3"
+          className="absolute top-2 right-2 md:top-3 md:right-3"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 500, damping: 25 }}
@@ -102,13 +127,13 @@ function FrequencyToggle({
   onChange: (v: DonationFrequency) => void;
 }) {
   return (
-    <div className="flex p-1 bg-stone-100 rounded-xl">
+    <div className="flex p-1.5 bg-stone-100 rounded-2xl">
       {(['one_time', 'monthly'] as const).map((freq) => (
         <motion.button
           key={freq}
           onClick={() => onChange(freq)}
           className={cn(
-            'flex-1 py-3 px-6 rounded-lg text-sm font-medium transition-colors relative',
+            'flex-1 py-3.5 px-4 rounded-xl text-sm font-semibold transition-colors relative',
             value === freq ? 'text-white' : 'text-stone-600 hover:text-stone-900'
           )}
           whileTap={{ scale: 0.98 }}
@@ -116,11 +141,14 @@ function FrequencyToggle({
           {value === freq && (
             <motion.div
               layoutId="frequency-bg"
-              className="absolute inset-0 bg-stone-900 rounded-lg"
+              className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl"
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           )}
-          <span className="relative z-10">{FREQUENCY_LABELS[freq]}</span>
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            {freq === 'monthly' && <span className="text-xs">💝</span>}
+            {FREQUENCY_LABELS[freq]}
+          </span>
         </motion.button>
       ))}
     </div>
@@ -147,7 +175,7 @@ function PurposeSelector({
             'w-full p-4 rounded-xl text-left transition-all duration-200',
             'border',
             value === purpose
-              ? 'border-stone-900 bg-stone-50'
+              ? 'border-amber-500 bg-amber-50'
               : 'border-stone-200 hover:border-stone-300 bg-white'
           )}
           whileHover={{ x: 4 }}
@@ -156,13 +184,13 @@ function PurposeSelector({
           <div className="flex items-center justify-between">
             <span className={cn(
               'text-sm font-medium',
-              value === purpose ? 'text-stone-900' : 'text-stone-600'
+              value === purpose ? 'text-amber-700' : 'text-stone-600'
             )}>
               {PURPOSE_LABELS[purpose]}
             </span>
             <div className={cn(
               'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-              value === purpose ? 'border-stone-900 bg-stone-900' : 'border-stone-300'
+              value === purpose ? 'border-amber-500 bg-amber-500' : 'border-stone-300'
             )}>
               {value === purpose && (
                 <motion.div
@@ -174,6 +202,90 @@ function PurposeSelector({
             </div>
           </div>
         </motion.button>
+      ))}
+    </div>
+  );
+}
+
+// Hero Image Carousel
+function HeroCarousel() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="absolute inset-0">
+      {HERO_IMAGES.map((img, i) => (
+        <motion.div
+          key={i}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: i === current ? 1 : 0 }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
+        >
+          <Image
+            src={img.src}
+            alt={img.alt}
+            fill
+            className="object-cover"
+            priority={i === 0}
+            sizes="100vw"
+          />
+        </motion.div>
+      ))}
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#FFFBF5] via-transparent to-transparent" />
+
+      {/* Carousel indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {HERO_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={cn(
+              'w-2 h-2 rounded-full transition-all duration-300',
+              i === current ? 'w-8 bg-white' : 'bg-white/50 hover:bg-white/75'
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Photo Grid Section
+function PhotoGrid() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+      {GALLERY_IMAGES.map((img, i) => (
+        <motion.div
+          key={i}
+          className={cn(
+            'relative rounded-2xl overflow-hidden',
+            i === 0 ? 'col-span-2 md:col-span-1 aspect-[4/3]' : 'aspect-square',
+            i === 1 && 'md:row-span-2 md:aspect-auto'
+          )}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1, duration: 0.6 }}
+          whileHover={{ scale: 1.02 }}
+        >
+          <Image
+            src={img.src}
+            alt={img.alt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 50vw, 33vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+        </motion.div>
       ))}
     </div>
   );
@@ -226,17 +338,17 @@ function DonatePageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAF9]">
+    <div className="min-h-screen bg-[#FFFBF5]">
       {/* Header */}
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 glass-subtle border-b border-stone-200/50"
+        className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-100"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 relative">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
+          <a href="/" className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 relative">
               <Image
                 src={IMAGES.logo}
                 alt="PLP財団"
@@ -245,102 +357,169 @@ function DonatePageContent() {
                 sizes="40px"
               />
             </div>
-            <span className="font-semibold text-stone-900 tracking-tight">PLP財団</span>
+            <span className="font-bold text-stone-900 tracking-tight text-sm md:text-base">PLP財団</span>
           </a>
-          <Button variant="primary" size="sm" onClick={scrollToForm}>
+          <Button variant="primary" size="sm" onClick={scrollToForm} className="bg-gradient-to-r from-amber-500 to-orange-500 border-0 text-sm px-4 py-2">
             寄付する
           </Button>
         </div>
       </motion.header>
 
-      <main className="pt-16">
-        {/* Hero Section with Background Image */}
-        <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-center overflow-hidden">
-          {/* Hero Background Image */}
-          <div className="absolute inset-0 z-0">
-            <Image
-              src={IMAGES.hero}
-              alt="平和な世界"
-              fill
-              className="object-cover"
-              priority
-              sizes="100vw"
-            />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#FAFAF9]/90 via-[#FAFAF9]/70 to-[#FAFAF9]" />
-          </div>
+      <main className="pt-14 md:pt-16">
+        {/* Hero Section with Image Carousel */}
+        <section className="relative h-[85vh] md:h-[90vh] flex items-center overflow-hidden">
+          <HeroCarousel />
 
           <motion.div
-            className="relative z-10 max-w-3xl mx-auto px-6 text-center py-24 md:py-32"
+            className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center"
             initial="hidden"
             animate="visible"
             variants={stagger}
           >
-            <motion.p
+            <motion.div
               variants={fadeUp}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="text-caption mb-6"
+              className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 mb-6 md:mb-8"
             >
-              Donate to Peace
-            </motion.p>
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs md:text-sm font-medium text-stone-700">現在 847 名の方が支援中</span>
+            </motion.div>
 
             <motion.h1
               variants={fadeUp}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-              className="text-display text-5xl md:text-7xl text-stone-900 mb-8"
+              className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 md:mb-8 drop-shadow-lg"
             >
-              平和を、
+              子どもたちの
               <br />
-              <span className="font-semibold">贈る。</span>
+              <span className="text-amber-300">笑顔</span>のために
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-              className="text-body text-lg md:text-xl max-w-xl mx-auto mb-12"
+              className="text-base md:text-xl text-white/90 max-w-xl mx-auto mb-8 md:mb-12 drop-shadow"
             >
-              あなたの想いが、世界を変える力になります。
+              あなたの支援が、アジアの子どもたちに
               <br className="hidden md:block" />
-              一人ひとりの支援が、平和な未来を創ります。
+              教育と希望を届けます
             </motion.p>
 
             <motion.div
               variants={fadeUp}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-              className="flex flex-wrap justify-center gap-6 text-sm text-stone-500"
             >
-              {['30年以上の活動実績', '50ヶ国以上で展開', '10,000人以上の支援者'].map((text, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                  {text}
-                </span>
-              ))}
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={scrollToForm}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 border-0 shadow-xl shadow-amber-500/30 text-base md:text-lg px-8 md:px-12 py-4"
+              >
+                今すぐ寄付する
+              </Button>
             </motion.div>
           </motion.div>
         </section>
 
-        {/* Donation Form Section */}
-        <section ref={formRef} className="py-12 md:py-24">
-          <div className="max-w-xl mx-auto px-6">
+        {/* Trust Stats */}
+        <section className="py-8 md:py-12 bg-white">
+          <div className="max-w-5xl mx-auto px-4 md:px-6">
             <motion.div
-              className="bg-white rounded-3xl shadow-xl shadow-stone-200/50 p-8 md:p-10"
+              className="grid grid-cols-3 gap-4 md:gap-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              {[
+                { value: '30年+', label: '活動実績' },
+                { value: '5カ国', label: '支援地域' },
+                { value: '10,000+', label: '支援者数' },
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-2xl md:text-4xl font-bold text-amber-600">{stat.value}</p>
+                  <p className="text-xs md:text-sm text-stone-500 mt-1">{stat.label}</p>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Photo Gallery */}
+        <section className="py-12 md:py-20 bg-[#FFFBF5]">
+          <div className="max-w-5xl mx-auto px-4 md:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+              className="text-center mb-8 md:mb-12"
+            >
+              <motion.p variants={fadeUp} className="text-amber-600 font-semibold text-sm mb-2">
+                OUR ACTIVITIES
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-2xl md:text-4xl font-bold text-stone-900">
+                世界各地での活動
+              </motion.h2>
+            </motion.div>
+
+            <PhotoGrid />
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center text-stone-500 text-sm mt-6"
+            >
+              カンボジア・フィリピン・ミャンマーなどで教育支援活動を展開
+            </motion.p>
+          </div>
+        </section>
+
+        {/* Donation Form Section */}
+        <section ref={formRef} className="py-12 md:py-20 bg-white" id="donate-form">
+          <div className="max-w-lg mx-auto px-4 md:px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-8"
+            >
+              <h2 className="text-2xl md:text-3xl font-bold text-stone-900 mb-3">
+                寄付金額を選ぶ
+              </h2>
+              <p className="text-stone-500 text-sm">
+                すべての寄付が子どもたちの未来を支えます
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="bg-[#FFFBF5] rounded-3xl shadow-xl shadow-amber-100/50 p-6 md:p-8"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               {/* Frequency */}
-              <div className="mb-10">
-                <label className="text-caption block mb-4">寄付の種類</label>
+              <div className="mb-8">
+                <label className="text-xs font-semibold text-stone-500 uppercase tracking-wider block mb-3">寄付の種類</label>
                 <FrequencyToggle
                   value={selection.frequency}
                   onChange={(v) => setSelection((prev) => ({ ...prev, frequency: v }))}
                 />
+                {selection.frequency === 'monthly' && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="text-xs text-amber-600 mt-3 flex items-center gap-1"
+                  >
+                    <span>💝</span> 毎月の継続支援で、安定した教育環境を届けられます
+                  </motion.p>
+                )}
               </div>
 
               {/* Amount */}
-              <div className="mb-10">
-                <label className="text-caption block mb-4">
+              <div className="mb-8">
+                <label className="text-xs font-semibold text-stone-500 uppercase tracking-wider block mb-3">
                   金額を選択{selection.frequency === 'monthly' && ' (月額)'}
                 </label>
                 <div className="grid grid-cols-2 gap-3 mb-4">
@@ -356,19 +535,19 @@ function DonatePageContent() {
 
                 {/* Custom Amount */}
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">¥</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 font-medium">¥</span>
                   <input
                     type="text"
                     inputMode="numeric"
-                    placeholder="その他の金額"
+                    placeholder="その他の金額を入力"
                     value={customAmount}
                     onChange={(e) => handleCustomAmountChange(e.target.value)}
                     className={cn(
-                      'w-full pl-8 pr-4 py-4 rounded-xl border-2 text-lg font-medium',
-                      'transition-all duration-200',
-                      'placeholder:text-stone-400 placeholder:font-normal',
+                      'w-full pl-8 pr-4 py-4 rounded-xl border-2 text-lg font-semibold',
+                      'transition-all duration-200 bg-white',
+                      'placeholder:text-stone-400 placeholder:font-normal placeholder:text-base',
                       customAmount
-                        ? 'border-stone-900 bg-stone-50'
+                        ? 'border-amber-500 ring-4 ring-amber-500/10'
                         : 'border-stone-200 hover:border-stone-300'
                     )}
                   />
@@ -376,12 +555,12 @@ function DonatePageContent() {
               </div>
 
               {/* Purpose Toggle */}
-              <div className="mb-10">
+              <div className="mb-8">
                 <button
                   onClick={() => setShowPurpose(!showPurpose)}
-                  className="flex items-center justify-between w-full py-4 text-left"
+                  className="flex items-center justify-between w-full py-3 text-left"
                 >
-                  <span className="text-caption">使途を指定する（任意）</span>
+                  <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">使途を指定する（任意）</span>
                   <motion.svg
                     className="w-5 h-5 text-stone-400"
                     fill="none"
@@ -402,25 +581,27 @@ function DonatePageContent() {
                       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <PurposeSelector
-                        value={selection.purpose}
-                        onChange={(v) => setSelection((prev) => ({ ...prev, purpose: v }))}
-                      />
+                      <div className="pt-2">
+                        <PurposeSelector
+                          value={selection.purpose}
+                          onChange={(v) => setSelection((prev) => ({ ...prev, purpose: v }))}
+                        />
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
 
               {/* Summary */}
-              <div className="bg-stone-50 rounded-2xl p-6 mb-8">
+              <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-5 mb-6 text-white">
                 <div className="flex items-center justify-between">
-                  <span className="text-stone-600">合計</span>
+                  <span className="text-white/80 text-sm">寄付金額</span>
                   <div className="text-right">
-                    <span className="text-3xl font-semibold text-stone-900">
+                    <span className="text-3xl md:text-4xl font-bold">
                       ¥{selection.amount.toLocaleString()}
                     </span>
                     {selection.frequency === 'monthly' && (
-                      <span className="text-stone-500 text-sm ml-1">/月</span>
+                      <span className="text-white/80 text-sm ml-1">/月</span>
                     )}
                   </div>
                 </div>
@@ -430,19 +611,20 @@ function DonatePageContent() {
               <Button
                 variant="primary"
                 size="lg"
-                className="w-full"
+                className="w-full bg-stone-900 hover:bg-stone-800 border-0 text-base py-4"
                 onClick={handleProceed}
               >
-                次へ進む
+                この金額で寄付する →
               </Button>
 
               {/* Trust Badges */}
-              <div className="flex items-center justify-center gap-6 mt-8 pt-8 border-t border-stone-100">
+              <div className="flex items-center justify-center gap-4 mt-6 pt-6 border-t border-stone-200">
                 {[
                   { icon: '🔒', text: 'SSL暗号化' },
                   { icon: '📄', text: '領収書発行' },
+                  { icon: '💳', text: 'Stripe決済' },
                 ].map((badge) => (
-                  <span key={badge.text} className="flex items-center gap-2 text-xs text-stone-500">
+                  <span key={badge.text} className="flex items-center gap-1.5 text-xs text-stone-500">
                     <span>{badge.icon}</span>
                     {badge.text}
                   </span>
@@ -452,81 +634,78 @@ function DonatePageContent() {
           </div>
         </section>
 
-        {/* Impact Section */}
-        <section className="py-24 md:py-32 bg-stone-50/50">
-          <div className="max-w-5xl mx-auto px-6">
+        {/* Impact Section with Activities Image */}
+        <section className="py-12 md:py-20 bg-[#FFFBF5]">
+          <div className="max-w-5xl mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-100px' }}
+              viewport={{ once: true }}
               variants={stagger}
-              className="text-center mb-16"
+              className="text-center mb-8 md:mb-12"
             >
-              <motion.p variants={fadeUp} className="text-caption mb-4">
-                Our Impact
+              <motion.p variants={fadeUp} className="text-amber-600 font-semibold text-sm mb-2">
+                YOUR IMPACT
               </motion.p>
-              <motion.h2 variants={fadeUp} className="text-heading text-3xl md:text-4xl text-stone-900">
-                あなたの寄付が届ける未来
+              <motion.h2 variants={fadeUp} className="text-2xl md:text-4xl font-bold text-stone-900">
+                あなたの寄付でできること
               </motion.h2>
             </motion.div>
 
-            {/* PR Image Feature */}
+            {/* Activities Infographic */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-16 rounded-3xl overflow-hidden shadow-xl relative aspect-[16/9] md:aspect-[21/9]"
+              viewport={{ once: true }}
+              className="mb-12 md:mb-16 rounded-3xl overflow-hidden shadow-xl bg-white"
             >
-              <Image
-                src={IMAGES.pr}
-                alt="PLP財団の活動"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 1200px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-                <p className="text-white/80 text-sm mb-2">PEACE · LOVE · PROSPERITY</p>
-                <h3 className="text-white text-xl md:text-2xl font-semibold">
-                  世界平和の実現に向けて、私たちは活動しています
-                </h3>
+              <div className="relative aspect-[4/3] md:aspect-[16/9]">
+                <Image
+                  src={IMAGES.activities}
+                  alt="P-LPIの主な活動内容"
+                  fill
+                  className="object-contain bg-white p-4"
+                  sizes="(max-width: 768px) 100vw, 1200px"
+                />
               </div>
             </motion.div>
 
             <motion.div
-              className="grid md:grid-cols-3 gap-8"
+              className="grid md:grid-cols-3 gap-4 md:gap-6"
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-100px' }}
+              viewport={{ once: true }}
               variants={stagger}
             >
               {[
                 {
                   amount: '¥3,000',
                   impact: '教材キット1セット',
-                  description: '平和教育プログラムの教材を子どもたちに届けます',
+                  description: '子どもたちに学習教材を届けます',
+                  emoji: '📚',
                 },
                 {
                   amount: '¥10,000',
-                  impact: '調査活動1日分',
-                  description: '平和構築に関する調査研究活動を支援します',
+                  impact: '1ヶ月の給食支援',
+                  description: '栄養ある食事で健康な成長を',
+                  emoji: '🍱',
                 },
                 {
                   amount: '¥30,000',
-                  impact: '国連活動への参加支援',
-                  description: '国連での提言活動やイベント参加を支援します',
+                  impact: '奨学金1ヶ月分',
+                  description: '高等教育への道を開きます',
+                  emoji: '🎓',
                 },
               ].map((item, i) => (
                 <motion.div
                   key={i}
                   variants={fadeUp}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow duration-300"
+                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
-                  <span className="text-indigo-600 font-semibold text-sm">{item.amount}</span>
-                  <h3 className="text-heading text-xl text-stone-900 mt-2 mb-3">{item.impact}</h3>
-                  <p className="text-body text-sm">{item.description}</p>
+                  <span className="text-3xl mb-3 block">{item.emoji}</span>
+                  <span className="text-amber-600 font-bold text-sm">{item.amount}で</span>
+                  <h3 className="text-lg font-bold text-stone-900 mt-1 mb-2">{item.impact}</h3>
+                  <p className="text-stone-500 text-sm">{item.description}</p>
                 </motion.div>
               ))}
             </motion.div>
@@ -534,25 +713,25 @@ function DonatePageContent() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-24 md:py-32">
-          <div className="max-w-2xl mx-auto px-6">
+        <section className="py-12 md:py-20 bg-white">
+          <div className="max-w-2xl mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={stagger}
-              className="text-center mb-16"
+              className="text-center mb-8 md:mb-12"
             >
-              <motion.p variants={fadeUp} className="text-caption mb-4">
+              <motion.p variants={fadeUp} className="text-amber-600 font-semibold text-sm mb-2">
                 FAQ
               </motion.p>
-              <motion.h2 variants={fadeUp} className="text-heading text-3xl text-stone-900">
+              <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-stone-900">
                 よくある質問
               </motion.h2>
             </motion.div>
 
             <motion.div
-              className="space-y-4"
+              className="space-y-3"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -569,45 +748,56 @@ function DonatePageContent() {
                 },
                 {
                   q: '寄付金の使い道は？',
-                  a: '平和推進活動、国連活動支援、調査研究、緊急支援など、設立趣旨に沿った活動に使用されます。使途指定も可能です。',
+                  a: 'カンボジア、フィリピン、ミャンマーでの教育支援、給食支援、奨学金プログラムなどに使用されます。',
                 },
                 {
                   q: 'クレジットカード以外の支払い方法は？',
                   a: '現在はクレジットカードのみ対応しております。銀行振込をご希望の場合はお問い合わせください。',
                 },
               ].map((faq, i) => (
-                <FAQItem key={i} question={faq.q} answer={faq.a} index={i} />
+                <FAQItem key={i} question={faq.q} answer={faq.a} />
               ))}
             </motion.div>
           </div>
         </section>
 
         {/* Final CTA */}
-        <section className="py-24 md:py-32 bg-stone-900">
+        <section className="py-16 md:py-24 bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500">
           <motion.div
-            className="max-w-2xl mx-auto px-6 text-center"
+            className="max-w-2xl mx-auto px-4 md:px-6 text-center"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
           >
+            <motion.div
+              variants={fadeUp}
+              className="relative w-20 h-20 md:w-24 md:h-24 mx-auto mb-6"
+            >
+              <Image
+                src={IMAGES.cambodia2}
+                alt="子どもたちの笑顔"
+                fill
+                className="object-cover rounded-full ring-4 ring-white/30"
+              />
+            </motion.div>
             <motion.h2
               variants={fadeUp}
-              className="text-display text-4xl md:text-5xl text-white mb-6"
+              className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6"
             >
-              一緒に、平和な
+              一緒に、
               <br />
-              世界を創りましょう
+              未来を変えましょう
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-stone-400 text-lg mb-10">
-              あなたの一歩が、大きな変化の始まりです
+            <motion.p variants={fadeUp} className="text-white/90 text-base md:text-lg mb-8 md:mb-10">
+              あなたの一歩が、子どもたちの未来を照らします
             </motion.p>
             <motion.div variants={fadeUp}>
               <Button
                 variant="secondary"
                 size="lg"
                 onClick={scrollToForm}
-                className="bg-white text-stone-900 hover:bg-stone-100"
+                className="bg-white text-amber-600 hover:bg-stone-50 border-0 shadow-xl text-base md:text-lg px-8 md:px-12 py-4"
               >
                 今すぐ寄付する
               </Button>
@@ -617,9 +807,9 @@ function DonatePageContent() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-stone-900 border-t border-stone-800 py-12">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <footer className="bg-stone-900 py-10 md:py-12">
+        <div className="max-w-5xl mx-auto px-4 md:px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 relative">
                 <Image
@@ -638,29 +828,45 @@ function DonatePageContent() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Fixed CTA */}
+      <motion.div
+        className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/95 backdrop-blur-xl border-t border-stone-200 md:hidden"
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        transition={{ delay: 1, duration: 0.6 }}
+      >
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={scrollToForm}
+          className="w-full bg-gradient-to-r from-amber-500 to-orange-500 border-0 py-4"
+        >
+          今すぐ寄付する
+        </Button>
+      </motion.div>
     </div>
   );
 }
 
 // FAQ Item Component
-function FAQItem({ question, answer, index }: { question: string; answer: string; index: number }) {
+function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.div
       variants={fadeUp}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-white rounded-2xl overflow-hidden"
+      className="bg-[#FFFBF5] rounded-2xl overflow-hidden"
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-5 flex items-center justify-between text-left"
+        className="w-full px-5 py-4 flex items-center justify-between text-left"
       >
-        <span className="font-medium text-stone-900 pr-4">{question}</span>
+        <span className="font-semibold text-stone-900 pr-4 text-sm md:text-base">{question}</span>
         <motion.span
           animate={{ rotate: isOpen ? 45 : 0 }}
           transition={{ duration: 0.2 }}
-          className="text-stone-400 text-xl flex-shrink-0"
+          className="text-amber-500 text-xl flex-shrink-0 font-bold"
         >
           +
         </motion.span>
@@ -674,8 +880,8 @@ function FAQItem({ question, answer, index }: { question: string; answer: string
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-6 pb-5">
-              <p className="text-body text-sm">{answer}</p>
+            <div className="px-5 pb-4">
+              <p className="text-stone-600 text-sm leading-relaxed">{answer}</p>
             </div>
           </motion.div>
         )}
@@ -688,9 +894,9 @@ export default function DonatePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#FAFAF9] flex items-center justify-center">
+        <div className="min-h-screen bg-[#FFFBF5] flex items-center justify-center">
           <motion.div
-            className="w-8 h-8 border-2 border-stone-200 border-t-stone-900 rounded-full"
+            className="w-10 h-10 border-3 border-amber-200 border-t-amber-500 rounded-full"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />
