@@ -3,7 +3,11 @@
 import { useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Logo URL
+const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/左上ロゴマーク.png';
 import { cn } from '@/lib/utils';
 import Button from '@/components/ui/Button';
 import {
@@ -240,8 +244,14 @@ function CheckoutPageContent() {
       >
         <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-stone-900 flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">P</span>
+            <div className="w-10 h-10 relative">
+              <Image
+                src={LOGO_URL}
+                alt="PLP財団"
+                fill
+                className="object-contain"
+                sizes="40px"
+              />
             </div>
             <span className="font-semibold text-stone-900 tracking-tight">PLP財団</span>
           </Link>

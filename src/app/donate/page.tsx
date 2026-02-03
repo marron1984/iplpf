@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useRef, useState, useCallback } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DonationFrequency,
@@ -11,6 +12,13 @@ import {
 import { AMOUNT_CHIPS, PURPOSE_LABELS, FREQUENCY_LABELS } from '@/lib/donate/constants';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+
+// Image URLs
+const IMAGES = {
+  logo: 'https://iplpf.org/wp-content/uploads/2026/01/左上ロゴマーク.png',
+  hero: 'https://iplpf.org/wp-content/uploads/2026/01/HP_TOP画像-3-c-scaled.png',
+  pr: 'https://iplpf.org/wp-content/uploads/2023/06/pr.png',
+};
 
 // Animation variants
 const fadeUp = {
@@ -228,8 +236,14 @@ function DonatePageContent() {
       >
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <a href="/" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-stone-900 flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">P</span>
+            <div className="w-10 h-10 relative">
+              <Image
+                src={IMAGES.logo}
+                alt="PLP財団"
+                fill
+                className="object-contain"
+                sizes="40px"
+              />
             </div>
             <span className="font-semibold text-stone-900 tracking-tight">PLP財団</span>
           </a>
@@ -240,10 +254,24 @@ function DonatePageContent() {
       </motion.header>
 
       <main className="pt-16">
-        {/* Hero Section */}
-        <section className="py-24 md:py-32">
+        {/* Hero Section with Background Image */}
+        <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-center overflow-hidden">
+          {/* Hero Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={IMAGES.hero}
+              alt="平和な世界"
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#FAFAF9]/90 via-[#FAFAF9]/70 to-[#FAFAF9]" />
+          </div>
+
           <motion.div
-            className="max-w-3xl mx-auto px-6 text-center"
+            className="relative z-10 max-w-3xl mx-auto px-6 text-center py-24 md:py-32"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -442,6 +470,30 @@ function DonatePageContent() {
               </motion.h2>
             </motion.div>
 
+            {/* PR Image Feature */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-16 rounded-3xl overflow-hidden shadow-xl relative aspect-[16/9] md:aspect-[21/9]"
+            >
+              <Image
+                src={IMAGES.pr}
+                alt="PLP財団の活動"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 1200px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+                <p className="text-white/80 text-sm mb-2">PEACE · LOVE · PROSPERITY</p>
+                <h3 className="text-white text-xl md:text-2xl font-semibold">
+                  世界平和の実現に向けて、私たちは活動しています
+                </h3>
+              </div>
+            </motion.div>
+
             <motion.div
               className="grid md:grid-cols-3 gap-8"
               initial="hidden"
@@ -569,8 +621,14 @@ function DonatePageContent() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">P</span>
+              <div className="w-8 h-8 relative">
+                <Image
+                  src={IMAGES.logo}
+                  alt="PLP財団"
+                  fill
+                  className="object-contain brightness-0 invert"
+                  sizes="32px"
+                />
               </div>
               <span className="text-white/80 font-medium">PLP財団</span>
             </div>
