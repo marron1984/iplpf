@@ -1,32 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Button from '@/components/ui/Button';
-
-// Image URLs
-const IMAGES = {
-  logo: 'https://iplpf.org/wp-content/uploads/2026/01/HDRP_ロゴマークOL_20260119-768x454.png',
-  activities: 'https://iplpf.org/wp-content/uploads/2026/01/P-LPIの主な活動内容-1536x1143.png',
-  cambodia1: 'https://iplpf.org/wp-content/uploads/2026/01/カンボジアIMG_0269.jpg',
-  cambodia2: 'https://iplpf.org/wp-content/uploads/2026/01/カンボジアバンザイ_0258.png',
-  cambodia3: 'https://iplpf.org/wp-content/uploads/2025/10/カンボジアIMG_0267.jpg',
-  cambodia4: 'https://iplpf.org/wp-content/uploads/2025/10/IMG-2962-768x576.jpg',
-  philippines: 'https://iplpf.org/wp-content/uploads/2026/01/フィリピン男の子-768x576.png',
-  myanmar1: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー2-768x432.png',
-  myanmar2: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー3-768x432.png',
-  myanmar3: 'https://iplpf.org/wp-content/uploads/2026/01/ミャンマー5-768x557.png',
-};
-
-// Hero images for carousel
-const HERO_IMAGES = [
-  { src: IMAGES.cambodia2, alt: 'カンボジアの子どもたち' },
-  { src: IMAGES.philippines, alt: 'フィリピンの男の子' },
-  { src: IMAGES.myanmar1, alt: 'ミャンマーでの活動' },
-];
+import {
+  OFFICIAL_LOGO_URL,
+  HEADER_LOGO_URL,
+  HERO_URL,
+  MISSION_URL,
+  SDGS_URL,
+  NOTO_URL,
+  PARTNER_NISSAN_URL,
+} from '@/lib/iplpfAssets';
 
 // Animation variants
 const fadeUp = {
@@ -41,99 +28,6 @@ const stagger = {
     },
   },
 };
-
-// Hero Carousel
-function HeroCarousel() {
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div className="absolute inset-0">
-      {HERO_IMAGES.map((img, i) => (
-        <motion.div
-          key={i}
-          className="absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: i === current ? 1 : 0 }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
-        >
-          <Image
-            src={img.src}
-            alt={img.alt}
-            fill
-            className="object-cover"
-            priority={i === 0}
-            sizes="100vw"
-          />
-        </motion.div>
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#FFFBF5] via-transparent to-transparent" />
-
-      {/* Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {HERO_IMAGES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={cn(
-              'w-2 h-2 rounded-full transition-all duration-300',
-              i === current ? 'w-8 bg-white' : 'bg-white/50 hover:bg-white/75'
-            )}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Activity Card
-function ActivityCard({
-  title,
-  description,
-  icon,
-  image,
-  delay = 0,
-}: {
-  title: string;
-  description: string;
-  icon: string;
-  image: string;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -8 }}
-      className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
-    >
-      <div className="relative h-48 overflow-hidden">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          sizes="(max-width: 768px) 100vw, 25vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <span className="absolute bottom-4 left-4 text-3xl">{icon}</span>
-      </div>
-      <div className="p-5">
-        <h3 className="text-lg font-bold text-stone-900 mb-2">{title}</h3>
-        <p className="text-sm text-stone-500 leading-relaxed">{description}</p>
-      </div>
-    </motion.div>
-  );
-}
 
 // Stats Counter
 function StatCounter({ value, label }: { value: string; label: string }) {
@@ -177,15 +71,11 @@ export default function Home() {
       >
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 md:gap-3">
-            <div className="w-10 h-10 md:w-12 md:h-12 relative">
-              <Image
-                src={IMAGES.logo}
-                alt="PLP財団"
-                fill
-                className="object-contain"
-                sizes="48px"
-              />
-            </div>
+            <img
+              src={HEADER_LOGO_URL}
+              alt="国際P-LP財団 公式ロゴ"
+              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+            />
             <span className={cn(
               'font-bold tracking-tight text-sm md:text-lg transition-colors',
               isScrolled ? 'text-stone-900' : 'text-white'
@@ -275,7 +165,16 @@ export default function Home() {
       <main>
         {/* Hero Section */}
         <section className="relative h-screen flex items-center overflow-hidden">
-          <HeroCarousel />
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <img
+              src={HERO_URL}
+              alt="PLP財団 トップイメージ"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#FFFBF5] via-transparent to-transparent" />
+          </div>
 
           <motion.div
             className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center"
@@ -364,8 +263,45 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Mission Section */}
+        <section className="py-16 md:py-24 bg-[#FFFBF5]">
+          <div className="max-w-6xl mx-auto px-4 md:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+              className="text-center mb-12 md:mb-16"
+            >
+              <motion.p variants={fadeUp} className="text-amber-600 font-semibold text-sm mb-2">
+                OUR MISSION
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">
+                めざすもの
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-stone-500 max-w-2xl mx-auto">
+                私たちは平和を愛する心を育み、共に支え合う社会の実現を目指しています。
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="rounded-3xl overflow-hidden shadow-xl bg-white"
+            >
+              <img
+                src={MISSION_URL}
+                alt="めざすもの - IPLPF ミッション"
+                className="w-full h-auto object-contain"
+              />
+            </motion.div>
+          </div>
+        </section>
+
         {/* Activities Section */}
-        <section id="activities" className="py-16 md:py-24 bg-[#FFFBF5]">
+        <section id="activities" className="py-16 md:py-24 bg-white">
           <div className="max-w-6xl mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
@@ -387,109 +323,146 @@ export default function Home() {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <ActivityCard
-                title="平和推進"
-                description="平和教育プログラムの開発と普及を通じて、平和を愛する人を増やします。"
-                icon="🕊️"
-                image={IMAGES.cambodia2}
-                delay={0}
-              />
-              <ActivityCard
-                title="国連活動支援"
-                description="国連機関と連携し、国際的な平和構築活動を支援しています。"
-                icon="🌍"
-                image={IMAGES.myanmar2}
-                delay={0.1}
-              />
-              <ActivityCard
-                title="調査研究・提言"
-                description="平和構築に関する調査研究を行い、政策提言を行っています。"
-                icon="📊"
-                image={IMAGES.cambodia3}
-                delay={0.2}
-              />
-              <ActivityCard
-                title="支援活動"
-                description="教育支援、給食支援、奨学金プログラムを実施しています。"
-                icon="🤝"
-                image={IMAGES.philippines}
-                delay={0.3}
-              />
+              {[
+                { title: '平和推進', description: '平和教育プログラムの開発と普及を通じて、平和を愛する人を増やします。', icon: '🕊️', image: HERO_URL },
+                { title: '国連活動支援', description: '国連機関と連携し、国際的な平和構築活動を支援しています。', icon: '🌍', image: SDGS_URL },
+                { title: '調査研究・提言', description: '平和構築に関する調査研究を行い、政策提言を行っています。', icon: '📊', image: MISSION_URL },
+                { title: '支援活動', description: '教育支援、給食支援、奨学金プログラムを実施しています。', icon: '🤝', image: NOTO_URL },
+              ].map((activity, i) => (
+                <motion.div
+                  key={activity.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ y: -8 }}
+                  className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ring-1 ring-stone-100"
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={activity.image}
+                      alt={activity.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <span className="absolute bottom-4 left-4 text-3xl">{activity.icon}</span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-bold text-stone-900 mb-2">{activity.title}</h3>
+                    <p className="text-sm text-stone-500 leading-relaxed">{activity.description}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Activities Infographic */}
-        <section className="py-16 md:py-24 bg-white">
-          <div className="max-w-5xl mx-auto px-4 md:px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="rounded-3xl overflow-hidden shadow-xl bg-white"
-            >
-              <div className="relative aspect-[4/3] md:aspect-[16/10]">
-                <Image
-                  src={IMAGES.activities}
-                  alt="P-LPIの主な活動内容"
-                  fill
-                  className="object-contain p-4 md:p-8"
-                  sizes="(max-width: 768px) 100vw, 1000px"
-                />
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Photo Gallery */}
-        <section className="py-16 md:py-24 bg-[#FFFBF5]">
+        {/* SDGs Section */}
+        <section className="py-16 md:py-24 bg-gradient-to-b from-amber-50 to-white">
           <div className="max-w-6xl mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={stagger}
-              className="text-center mb-12"
+              className="text-center mb-12 md:mb-16"
             >
               <motion.p variants={fadeUp} className="text-amber-600 font-semibold text-sm mb-2">
-                GALLERY
+                SDGs
               </motion.p>
-              <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-stone-900">
-                活動の様子
+              <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">
+                SDGsへの取り組み
               </motion.h2>
+              <motion.p variants={fadeUp} className="text-stone-500 max-w-2xl mx-auto">
+                持続可能な開発目標（SDGs）の達成に向けて、様々な活動を展開しています。
+              </motion.p>
             </motion.div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-              {[
-                IMAGES.cambodia1,
-                IMAGES.philippines,
-                IMAGES.myanmar1,
-                IMAGES.cambodia3,
-                IMAGES.myanmar3,
-                IMAGES.cambodia4,
-              ].map((src, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  whileHover={{ scale: 1.03 }}
-                  className={cn(
-                    'relative rounded-2xl overflow-hidden',
-                    i === 0 ? 'col-span-2 md:col-span-1 aspect-[4/3]' : 'aspect-square'
-                  )}
-                >
-                  <Image
-                    src={src}
-                    alt="活動写真"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                  />
-                </motion.div>
-              ))}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="rounded-3xl overflow-hidden shadow-xl bg-white p-6 md:p-8"
+            >
+              <img
+                src={SDGS_URL}
+                alt="SDGs ポスター"
+                className="w-full max-w-3xl mx-auto h-auto object-contain"
+              />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Disaster Relief Section */}
+        <section className="py-16 md:py-24 bg-white">
+          <div className="max-w-6xl mx-auto px-4 md:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+              className="text-center mb-12 md:mb-16"
+            >
+              <motion.p variants={fadeUp} className="text-amber-600 font-semibold text-sm mb-2">
+                DISASTER RELIEF
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">
+                災害支援活動
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-stone-500 max-w-2xl mx-auto">
+                自然災害の被災地支援を通じて、人々の生活再建をサポートしています。
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="grid md:grid-cols-2 gap-8 items-center"
+            >
+              <div className="rounded-2xl overflow-hidden shadow-lg">
+                <img
+                  src={NOTO_URL}
+                  alt="能登半島地震 支援活動"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="space-y-6">
+                <h3 className="text-xl md:text-2xl font-bold text-stone-900">
+                  能登半島地震 支援活動
+                </h3>
+                <p className="text-stone-600 leading-relaxed">
+                  2024年1月に発生した能登半島地震の被災地において、
+                  物資支援やボランティア活動を通じて復興支援に取り組んでいます。
+                  被災された方々の一日も早い生活再建を願い、継続的な支援を行っています。
+                </p>
+                <Link href="/activities">
+                  <Button
+                    variant="primary"
+                    className="bg-gradient-to-r from-amber-500 to-orange-500 border-0"
+                  >
+                    活動詳細を見る
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Partner Section */}
+        <section className="py-12 md:py-16 bg-stone-50">
+          <div className="max-w-6xl mx-auto px-4 md:px-6">
+            <h3 className="text-center text-sm font-semibold text-stone-400 uppercase tracking-wider mb-8">
+              パートナー
+            </h3>
+            <div className="flex justify-center items-center">
+              <img
+                src={PARTNER_NISSAN_URL}
+                alt="日産自動車"
+                className="h-12 md:h-16 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
             </div>
           </div>
         </section>
@@ -505,13 +478,12 @@ export default function Home() {
           >
             <motion.div
               variants={fadeUp}
-              className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-8"
+              className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-8 rounded-full overflow-hidden ring-4 ring-white/30"
             >
-              <Image
-                src={IMAGES.cambodia2}
+              <img
+                src={HERO_URL}
                 alt="子どもたちの笑顔"
-                fill
-                className="object-cover rounded-full ring-4 ring-white/30"
+                className="w-full h-full object-cover"
               />
             </motion.div>
 
@@ -550,18 +522,25 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-stone-900 py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 md:px-6">
+          {/* Footer Logo */}
+          <div className="flex justify-center mb-12">
+            <a href="https://iplpf.org/" target="_blank" rel="noopener noreferrer">
+              <img
+                src={OFFICIAL_LOGO_URL}
+                alt="国際P-LP財団 公式ロゴ"
+                className="h-16 md:h-20 w-auto max-w-[360px] md:max-w-[480px] object-contain hover:opacity-80 transition-opacity"
+              />
+            </a>
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 relative">
-                  <Image
-                    src={IMAGES.logo}
-                    alt="PLP財団"
-                    fill
-                    className="object-contain brightness-0 invert"
-                    sizes="40px"
-                  />
-                </div>
+                <img
+                  src={HEADER_LOGO_URL}
+                  alt="国際P-LP財団 公式ロゴ"
+                  className="w-10 h-10 object-contain brightness-0 invert"
+                />
                 <span className="text-lg font-bold text-white">PLP財団</span>
               </div>
               <p className="text-sm text-stone-400">

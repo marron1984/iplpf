@@ -2,14 +2,12 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-
-// Image URLs
-const IMAGES = {
-  hero: 'https://iplpf.org/wp-content/uploads/2026/01/HP_TOP%E7%94%BB%E5%83%8F-3-c-scaled.png',
-  mission: 'https://iplpf.org/wp-content/uploads/2026/01/%E3%82%81%E3%81%96%E3%81%99%E3%82%82%E3%81%AE%E5%90%8C%E3%82%B5%E3%82%A4%E3%82%BAOL2.png',
-  sdgs: 'https://iplpf.org/wp-content/uploads/2023/06/sdg_poster.png',
-  noto: 'https://iplpf.org/wp-content/uploads/2024/02/noto_20240127_5.png',
-};
+import {
+  HERO_URL,
+  MISSION_URL,
+  SDGS_URL,
+  NOTO_URL,
+} from '@/lib/iplpfAssets';
 
 // Hero Section
 export function HeroSection() {
@@ -18,7 +16,7 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src={IMAGES.hero}
+          src={HERO_URL}
           alt="PLP財団 トップイメージ"
           className="w-full h-full object-cover"
         />
@@ -88,7 +86,7 @@ export function MissionSection() {
           className="rounded-2xl overflow-hidden shadow-lg ring-1 ring-slate-200"
         >
           <img
-            src={IMAGES.mission}
+            src={MISSION_URL}
             alt="めざすもの - IPLPF ミッション"
             className="w-full h-auto object-contain bg-orange-50"
           />
@@ -126,7 +124,7 @@ export function SDGsSection() {
           className="rounded-2xl overflow-hidden shadow-lg ring-1 ring-slate-200 bg-white p-6 md:p-8"
         >
           <img
-            src={IMAGES.sdgs}
+            src={SDGS_URL}
             alt="SDGs ポスター"
             className="w-full max-w-3xl mx-auto h-auto object-contain"
           />
@@ -165,7 +163,7 @@ export function DisasterSupportSection() {
         >
           <div className="rounded-2xl overflow-hidden shadow-lg ring-1 ring-slate-200">
             <img
-              src={IMAGES.noto}
+              src={NOTO_URL}
               alt="能登半島地震 支援活動"
               className="w-full h-auto object-cover"
             />

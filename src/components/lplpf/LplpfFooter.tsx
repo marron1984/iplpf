@@ -1,10 +1,8 @@
 import Link from 'next/link';
-
-// Image URLs
-const IMAGES = {
-  nissanLogo: 'https://iplpf.org/wp-content/uploads/2023/06/nissan-2.png',
-  footerLogo: 'https://iplpf.org/wp-content/uploads/2026/01/%E3%83%95%E3%83%83%E3%82%BF%E3%83%BC%E3%83%AD%E3%82%B4-768x222.png',
-};
+import {
+  OFFICIAL_LOGO_URL,
+  PARTNER_NISSAN_URL,
+} from '@/lib/iplpfAssets';
 
 // Footer links
 const FOOTER_LINKS = {
@@ -36,7 +34,7 @@ export default function LplpfFooter() {
           </h3>
           <div className="flex justify-center items-center">
             <img
-              src={IMAGES.nissanLogo}
+              src={PARTNER_NISSAN_URL}
               alt="日産自動車"
               className="h-10 md:h-14 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
             />
@@ -121,8 +119,8 @@ export default function LplpfFooter() {
               className="block hover:opacity-80 transition-opacity"
             >
               <img
-                src={IMAGES.footerLogo}
-                alt="IPLPF ロゴ"
+                src={OFFICIAL_LOGO_URL}
+                alt="国際P-LP財団 公式ロゴ"
                 className="h-16 md:h-20 w-auto max-w-[360px] md:max-w-[480px] object-contain"
               />
             </a>

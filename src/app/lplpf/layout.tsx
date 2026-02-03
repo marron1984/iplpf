@@ -5,9 +5,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import LplpfFooter from '@/components/lplpf/LplpfFooter';
-
-// Logo URL from iplpf.org
-const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/%E5%B7%A6%E4%B8%8A%E3%83%AD%E3%82%B4%E3%83%9E%E3%83%BC%E3%82%AF.png';
+import { HEADER_LOGO_URL } from '@/lib/iplpfAssets';
 
 // Navigation items
 const NAV_ITEMS = [
@@ -51,8 +49,8 @@ export default function LplpfLayout({
           {/* Logo */}
           <Link href="/lplpf/" className="flex items-center gap-3">
             <img
-              src={LOGO_URL}
-              alt="IPLPF"
+              src={HEADER_LOGO_URL}
+              alt="国際P-LP財団 公式ロゴ"
               className="w-10 h-10 md:w-12 md:h-12 object-contain"
             />
             <span
