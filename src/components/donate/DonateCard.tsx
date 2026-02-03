@@ -303,8 +303,8 @@ export default function DonateCard({
 
         {/* CTA */}
         <Button
-          variant="glow"
-          size="xl"
+          variant="primary"
+          size="lg"
           onClick={handleSubmit}
           disabled={displayAmount < MIN_AMOUNT}
           className="w-full"

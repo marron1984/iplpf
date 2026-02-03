@@ -3,78 +3,171 @@
 import { useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import Header from '@/components/common/Header';
-import Footer from '@/components/common/Footer';
-import DonateSummary from '@/components/donate/DonateSummary';
-import DonorForm from '@/components/donate/DonorForm';
 import Button from '@/components/ui/Button';
 import {
   DonationFrequency,
   DonationPurpose,
   Donor,
+  DonorType,
   CreateCheckoutSessionRequest,
 } from '@/lib/donate/types';
-import { MIN_AMOUNT, MAX_AMOUNT } from '@/lib/donate/constants';
+import { MIN_AMOUNT, MAX_AMOUNT, FREQUENCY_LABELS, PURPOSE_LABELS, DONOR_TYPE_LABELS } from '@/lib/donate/constants';
+
+// Animation variants
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+};
+
+// Input component with zen styling
+function ZenInput({
+  label,
+  required = false,
+  error,
+  ...props
+}: {
+  label: string;
+  required?: boolean;
+  error?: string;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-stone-700">
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+      <motion.div
+        animate={{ scale: isFocused ? 1.01 : 1 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      >
+        <input
+          {...props}
+          onFocus={(e) => {
+            setIsFocused(true);
+            props.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            props.onBlur?.(e);
+          }}
+          className={cn(
+            'w-full px-4 py-3.5 rounded-xl border-2 text-stone-900',
+            'transition-all duration-200 outline-none',
+            'placeholder:text-stone-400',
+            error
+              ? 'border-red-300 bg-red-50/50'
+              : isFocused
+                ? 'border-stone-900 bg-white'
+                : 'border-stone-200 bg-white hover:border-stone-300'
+          )}
+        />
+      </motion.div>
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            className="text-sm text-red-500"
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Textarea component
+function ZenTextarea({
+  label,
+  ...props
+}: {
+  label: string;
+} & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-stone-700">
+        {label}
+        <span className="text-stone-400 font-normal ml-2">（任意）</span>
+      </label>
+      <motion.div
+        animate={{ scale: isFocused ? 1.005 : 1 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      >
+        <textarea
+          {...props}
+          onFocus={(e) => {
+            setIsFocused(true);
+            props.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            props.onBlur?.(e);
+          }}
+          className={cn(
+            'w-full px-4 py-3.5 rounded-xl border-2 text-stone-900 resize-none',
+            'transition-all duration-200 outline-none',
+            'placeholder:text-stone-400',
+            isFocused
+              ? 'border-stone-900 bg-white'
+              : 'border-stone-200 bg-white hover:border-stone-300'
+          )}
+        />
+      </motion.div>
+    </div>
+  );
+}
 
 function CheckoutPageContent() {
   const searchParams = useSearchParams();
 
   // URLパラメータから寄付情報を取得
-  const frequency =
-    (searchParams.get('frequency') as DonationFrequency) ?? 'one_time';
-  const amount = searchParams.get('amount')
-    ? parseInt(searchParams.get('amount')!, 10)
-    : 5000;
-  const purpose =
-    (searchParams.get('purpose') as DonationPurpose) ?? 'none';
+  const frequency = (searchParams.get('frequency') as DonationFrequency) ?? 'one_time';
+  const amount = searchParams.get('amount') ? parseInt(searchParams.get('amount')!, 10) : 5000;
+  const purpose = (searchParams.get('purpose') as DonationPurpose) ?? 'none';
 
   // フォーム状態
-  const [donor, setDonor] = useState<Donor>({
-    type: 'individual',
-    name: '',
-    email: '',
-    address: '',
-    message: '',
-  });
-  const [errors, setErrors] = useState<Partial<Record<keyof Donor, string>>>(
-    {}
-  );
+  const [donorType, setDonorType] = useState<DonorType>('individual');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // バリデーション
   const validate = useCallback((): boolean => {
-    const newErrors: Partial<Record<keyof Donor, string>> = {};
+    const newErrors: { name?: string; email?: string } = {};
 
-    if (!donor.name.trim()) {
-      newErrors.name =
-        donor.type === 'individual'
-          ? 'お名前を入力してください'
-          : '法人名を入力してください';
+    if (!name.trim()) {
+      newErrors.name = donorType === 'individual'
+        ? 'お名前を入力してください'
+        : '法人名を入力してください';
     }
 
-    if (!donor.email.trim()) {
+    if (!email.trim()) {
       newErrors.email = 'メールアドレスを入力してください';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donor.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = '有効なメールアドレスを入力してください';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [donor]);
+  }, [name, email, donorType]);
 
   // 送信処理
   const handleSubmit = useCallback(async () => {
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) return;
 
-    // 金額チェック
     if (amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
-      setSubmitError(
-        `金額は${MIN_AMOUNT.toLocaleString()}円以上、${MAX_AMOUNT.toLocaleString()}円以下で指定してください`
-      );
+      setSubmitError(`金額は${MIN_AMOUNT.toLocaleString()}円以上、${MAX_AMOUNT.toLocaleString()}円以下で指定してください`);
       return;
     }
 
@@ -82,6 +175,14 @@ function CheckoutPageContent() {
     setSubmitError(null);
 
     try {
+      const donor: Donor = {
+        type: donorType,
+        name,
+        email,
+        address: '',
+        message,
+      };
+
       const requestBody: CreateCheckoutSessionRequest = {
         frequency,
         amount,
@@ -91,9 +192,7 @@ function CheckoutPageContent() {
 
       const response = await fetch('/api/donate/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       });
 
@@ -103,35 +202,26 @@ function CheckoutPageContent() {
       }
 
       const data = await response.json();
-
       if (data.url) {
-        // Stripe Checkoutにリダイレクト
         window.location.href = data.url;
       } else {
         throw new Error('決済URLの取得に失敗しました');
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      setSubmitError(
-        error instanceof Error
-          ? error.message
-          : '決済処理中にエラーが発生しました。しばらく経ってからお試しください。'
-      );
+      setSubmitError(error instanceof Error ? error.message : '決済処理中にエラーが発生しました');
     } finally {
       setIsSubmitting(false);
     }
-  }, [frequency, amount, purpose, donor, validate]);
+  }, [frequency, amount, purpose, donorType, name, email, message, validate]);
 
-  // 金額が無効な場合は寄付ページに戻す
+  // 金額が無効な場合
   if (!amount || amount < MIN_AMOUNT) {
     return (
-      <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAFAF9] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-white/60 mb-4">寄付金額が設定されていません</p>
-          <Link
-            href="/donate"
-            className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
-          >
+          <p className="text-stone-600 mb-4">寄付金額が設定されていません</p>
+          <Link href="/donate" className="text-indigo-600 hover:text-indigo-700 font-medium">
             寄付ページに戻る
           </Link>
         </div>
@@ -140,150 +230,249 @@ function CheckoutPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-white">
-      <Header />
+    <div className="min-h-screen bg-[#FAFAF9]">
+      {/* Header */}
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50 glass-subtle border-b border-stone-200/50"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-stone-900 flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">P</span>
+            </div>
+            <span className="font-semibold text-stone-900 tracking-tight">PLP財団</span>
+          </Link>
+          <Link href="/donate" className="text-sm text-stone-500 hover:text-stone-900 transition-colors">
+            キャンセル
+          </Link>
+        </div>
+      </motion.header>
 
-      {/* 背景エフェクト */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[80px]" />
-      </div>
+      <main className="pt-28 pb-20">
+        <div className="max-w-lg mx-auto px-6">
+          {/* Progress */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-3 text-xs text-stone-400 mb-10"
+          >
+            <span className="text-indigo-600 font-medium">1. 金額選択</span>
+            <span className="w-8 h-px bg-stone-300" />
+            <span className="text-stone-900 font-medium">2. 情報入力</span>
+            <span className="w-8 h-px bg-stone-300" />
+            <span>3. 決済</span>
+          </motion.div>
 
-      <main className="relative pt-24 pb-12 md:py-32">
-        <div className="max-w-2xl mx-auto px-4">
-          {/* パンくず */}
-          <nav className="mb-8">
-            <ol className="flex items-center gap-2 text-sm text-white/50">
-              <li>
-                <Link href="/donate" className="hover:text-blue-400 transition-colors">
-                  寄付する
-                </Link>
-              </li>
-              <li className="text-white/30">/</li>
-              <li className="text-white font-medium">お支払い情報</li>
-            </ol>
-          </nav>
-
-          {/* ヘッダー */}
-          <div className="mb-10">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              お支払い情報の
-              <span className="gradient-text">入力</span>
+          {/* Title */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-10"
+          >
+            <h1 className="text-display text-3xl md:text-4xl text-stone-900 mb-3">
+              情報を入力
             </h1>
-            <p className="text-white/60">
+            <p className="text-body">
               決済はStripeを通じて安全に処理されます
             </p>
-          </div>
+          </motion.div>
 
-          {/* 寄付サマリー */}
-          <DonateSummary
-            frequency={frequency}
-            amount={amount}
-            purpose={purpose}
-          />
-
-          {/* 寄付者情報フォーム */}
-          <div
-            className={cn(
-              'rounded-2xl p-6 md:p-8 mb-6',
-              'bg-white/5 backdrop-blur-xl border border-white/10'
-            )}
+          {/* Summary Card */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="bg-white rounded-2xl p-6 mb-8 shadow-sm"
           >
-            <h2 className="text-xl font-bold text-white mb-6">
-              寄付者情報
-            </h2>
-            <DonorForm
-              initialDonor={donor}
-              onChange={setDonor}
-              errors={errors}
-            />
-          </div>
-
-          {/* 決済方法 */}
-          <div
-            className={cn(
-              'rounded-2xl p-6 md:p-8 mb-6',
-              'bg-white/5 backdrop-blur-xl border border-white/10'
-            )}
-          >
-            <h2 className="text-xl font-bold text-white mb-6">
-              お支払い方法
-            </h2>
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-blue-400"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-medium text-white">クレジットカード</p>
-                <p className="text-sm text-white/50">
-                  Visa, Mastercard, American Express, JCB
-                </p>
-              </div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-stone-500 text-sm">寄付金額</span>
+              <Link href="/donate" className="text-indigo-600 text-sm hover:text-indigo-700">
+                変更
+              </Link>
             </div>
-            <p className="mt-4 text-xs text-white/40">
-              決済処理はStripeを通じて安全に行われます。カード情報は当サイトでは保存されません。
-            </p>
-          </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-semibold text-stone-900">
+                ¥{amount.toLocaleString()}
+              </span>
+              {frequency === 'monthly' && (
+                <span className="text-stone-500">/月</span>
+              )}
+            </div>
+            <div className="flex gap-3 mt-4 pt-4 border-t border-stone-100">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-stone-100 text-xs text-stone-600">
+                {FREQUENCY_LABELS[frequency]}
+              </span>
+              {purpose !== 'none' && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-xs text-indigo-600">
+                  {PURPOSE_LABELS[purpose]}
+                </span>
+              )}
+            </div>
+          </motion.div>
 
-          {/* 銀行振込案内 */}
-          <div className="rounded-2xl p-5 mb-6 bg-blue-500/10 border border-blue-500/20">
-            <p className="text-sm text-blue-300">
-              <span className="font-medium">銀行振込をご希望の場合</span>
-              <br />
-              <a
-                href="mailto:info@iplpf.org"
-                className="text-blue-400 hover:underline"
+          {/* Form */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="bg-white rounded-2xl p-6 md:p-8 shadow-sm"
+          >
+            <h2 className="text-heading text-lg text-stone-900 mb-6">
+              ご連絡先
+            </h2>
+
+            <div className="space-y-6">
+              {/* Donor Type */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-stone-700">
+                  寄付者の種類
+                </label>
+                <div className="flex p-1 bg-stone-100 rounded-xl">
+                  {(['individual', 'corporate'] as const).map((type) => (
+                    <motion.button
+                      key={type}
+                      type="button"
+                      onClick={() => setDonorType(type)}
+                      className={cn(
+                        'flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors relative',
+                        donorType === type ? 'text-white' : 'text-stone-600'
+                      )}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {donorType === type && (
+                        <motion.div
+                          layoutId="donorType-bg"
+                          className="absolute inset-0 bg-stone-900 rounded-lg"
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10">{DONOR_TYPE_LABELS[type]}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Name */}
+              <ZenInput
+                label={donorType === 'individual' ? 'お名前' : '法人名'}
+                required
+                placeholder={donorType === 'individual' ? '山田 太郎' : '株式会社〇〇'}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                error={errors.name}
+              />
+
+              {/* Email */}
+              <ZenInput
+                label="メールアドレス"
+                required
+                type="email"
+                placeholder="example@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={errors.email}
+              />
+              <p className="text-xs text-stone-400 -mt-4">
+                確認メールと領収書のご案内をお送りします
+              </p>
+
+              {/* Message */}
+              <ZenTextarea
+                label="応援メッセージ"
+                placeholder="応援メッセージがあればお書きください..."
+                rows={3}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+            </div>
+          </motion.div>
+
+          {/* Payment Method Info */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="mt-6 p-5 rounded-xl bg-stone-50 border border-stone-200"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <svg className="w-5 h-5 text-stone-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+              </svg>
+              <span className="font-medium text-stone-700 text-sm">クレジットカード決済</span>
+            </div>
+            <p className="text-xs text-stone-500 leading-relaxed">
+              次のステップでカード情報を入力します。Visa, Mastercard, American Express, JCB対応。
+              決済情報は当サイトでは保存されません。
+            </p>
+          </motion.div>
+
+          {/* Error */}
+          <AnimatePresence>
+            {submitError && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="mt-6 p-4 rounded-xl bg-red-50 border border-red-200"
               >
-                info@iplpf.org
-              </a>
-              までお問い合わせください。
-            </p>
-          </div>
+                <p className="text-sm text-red-600">{submitError}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* エラーメッセージ */}
-          {submitError && (
-            <div className="rounded-2xl p-5 mb-6 bg-red-500/10 border border-red-500/20">
-              <p className="text-sm text-red-400">{submitError}</p>
-            </div>
-          )}
-
-          {/* 送信ボタン */}
-          <Button
-            variant="glow"
-            size="xl"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            isLoading={isSubmitting}
-            className="w-full"
+          {/* Submit */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+            className="mt-8"
           >
-            {amount.toLocaleString()}円を寄付する
-          </Button>
-
-          <p className="mt-6 text-xs text-white/40 text-center">
-            「寄付する」ボタンをクリックすると、Stripeの決済ページに移動します。
-            <br />
-            決済完了後、確認メールをお送りします。
-          </p>
-
-          {/* キャンセルリンク */}
-          <div className="mt-8 text-center">
-            <Link
-              href="/donate"
-              className="text-sm text-white/50 hover:text-white/70 transition-colors"
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              isLoading={isSubmitting}
+              className="w-full"
             >
-              キャンセルして戻る
-            </Link>
-          </div>
+              決済に進む
+            </Button>
+
+            <p className="mt-4 text-xs text-stone-400 text-center leading-relaxed">
+              「決済に進む」をクリックすると、Stripeの決済ページに移動します。
+            </p>
+          </motion.div>
         </div>
       </main>
 
-      <Footer />
+      {/* Footer */}
+      <footer className="border-t border-stone-200 py-8">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="flex items-center justify-center gap-6 text-xs text-stone-400">
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              SSL暗号化
+            </span>
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Powered by Stripe
+            </span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -292,11 +481,12 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#030712] flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 animate-pulse" />
-            <p className="text-sm text-white/40">読み込み中...</p>
-          </div>
+        <div className="min-h-screen bg-[#FAFAF9] flex items-center justify-center">
+          <motion.div
+            className="w-8 h-8 border-2 border-stone-200 border-t-stone-900 rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          />
         </div>
       }
     >
