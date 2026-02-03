@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import LplpfFooter from '@/components/lplpf/LplpfFooter';
 
 // Logo URL from iplpf.org
 const LOGO_URL = 'https://iplpf.org/wp-content/uploads/2026/01/%E5%B7%A6%E4%B8%8A%E3%83%AD%E3%82%B4%E3%83%9E%E3%83%BC%E3%82%AF.png';
@@ -18,25 +18,6 @@ const NAV_ITEMS = [
   { label: 'お知らせ', href: '/lplpf/blog-list/' },
   { label: 'お問い合わせ', href: '/lplpf/contact/' },
 ];
-
-// Footer links
-const FOOTER_LINKS = {
-  about: [
-    { label: '私たちについて', href: '/lplpf/about-us/' },
-    { label: '活動内容', href: '/lplpf/what-we-do/' },
-    { label: 'プロジェクト', href: '/lplpf/projects/' },
-  ],
-  resources: [
-    { label: '出版物', href: '/lplpf/publication/' },
-    { label: 'お知らせ', href: '/lplpf/blog-list/' },
-    { label: 'サポーター', href: '/lplpf/supporter/' },
-  ],
-  support: [
-    { label: '都度寄付', href: '/lplpf/one-time-donation/' },
-    { label: '継続寄付', href: '/lplpf/monthly-donation/' },
-    { label: 'お問い合わせ', href: '/lplpf/contact/' },
-  ],
-};
 
 export default function LplpfLayout({
   children,
@@ -69,15 +50,11 @@ export default function LplpfLayout({
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
           {/* Logo */}
           <Link href="/lplpf/" className="flex items-center gap-3">
-            <div className="w-10 h-10 md:w-12 md:h-12 relative">
-              <Image
-                src={LOGO_URL}
-                alt="IPLPF"
-                fill
-                className="object-contain"
-                sizes="48px"
-              />
-            </div>
+            <img
+              src={LOGO_URL}
+              alt="IPLPF"
+              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+            />
             <span
               className={cn(
                 'font-bold tracking-tight text-lg transition-colors',
@@ -102,7 +79,15 @@ export default function LplpfLayout({
                 {item.label}
               </Link>
             ))}
-            <Link href="/donate">
+            <a
+              href="https://iplpf.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors"
+            >
+              本家サイトへ
+            </a>
+            <Link href="/lplpf/one-time-donation/">
               <button className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl h-11 px-5 text-sm font-semibold shadow-sm transition-all hover:shadow-md">
                 寄付する
               </button>
@@ -159,8 +144,17 @@ export default function LplpfLayout({
                     {item.label}
                   </Link>
                 ))}
+                <a
+                  href="https://iplpf.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 px-4 text-orange-600 font-medium rounded-lg hover:bg-orange-50 transition-colors"
+                >
+                  本家サイトへ
+                </a>
                 <Link
-                  href="/donate"
+                  href="/lplpf/one-time-donation/"
                   onClick={() => setMobileMenuOpen(false)}
                   className="block mt-4"
                 >
@@ -175,107 +169,10 @@ export default function LplpfLayout({
       </motion.header>
 
       {/* Main Content */}
-      <main className="pt-16 md:pt-20">{children}</main>
+      <main>{children}</main>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            {/* Brand */}
-            <div className="col-span-2 md:col-span-1">
-              <Link href="/lplpf/" className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 relative">
-                  <Image
-                    src={LOGO_URL}
-                    alt="IPLPF"
-                    fill
-                    className="object-contain brightness-0 invert"
-                    sizes="40px"
-                  />
-                </div>
-                <span className="text-lg font-bold">IPLPF</span>
-              </Link>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                国際ピース・ラビング・ピープル財団
-                <br />
-                教育、研究、国際協力を通じて平和を構築
-              </p>
-            </div>
-
-            {/* About Links */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">私たちについて</h4>
-              <ul className="space-y-2">
-                {FOOTER_LINKS.about.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-slate-400 hover:text-orange-400 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Resources Links */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">リソース</h4>
-              <ul className="space-y-2">
-                {FOOTER_LINKS.resources.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-slate-400 hover:text-orange-400 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Support Links */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">ご支援</h4>
-              <ul className="space-y-2">
-                {FOOTER_LINKS.support.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-slate-400 hover:text-orange-400 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-slate-500">
-              &copy; {new Date().getFullYear()} IPLPF. All rights reserved.
-            </p>
-            <div className="flex gap-6">
-              <Link
-                href="/lplpf/privacy-policy/"
-                className="text-sm text-slate-500 hover:text-orange-400 transition-colors"
-              >
-                プライバシーポリシー
-              </Link>
-              <Link
-                href="/lplpf/terms/"
-                className="text-sm text-slate-500 hover:text-orange-400 transition-colors"
-              >
-                利用規約
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer with Partner Logo and Footer Logo */}
+      <LplpfFooter />
     </div>
   );
 }

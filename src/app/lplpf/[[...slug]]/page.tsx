@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import * as fs from 'fs';
 import * as path from 'path';
 import Link from 'next/link';
+import LplpfHomeSections from '@/components/lplpf/LplpfHomeSections';
 
 // Types
 interface PageData {
@@ -671,6 +672,7 @@ export default async function LplpfPage({
 }) {
   const { slug: slugArray } = await params;
   const slug = slugArray?.join('__') || 'index';
+  const isHome = slug === 'index';
 
   const pageData = getPageData(slug);
 
@@ -680,36 +682,49 @@ export default async function LplpfPage({
 
   return (
     <div className="min-h-screen">
-      {/* Page Banner */}
-      {slug !== 'index' && (
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 py-12 md:py-16">
-          <div className="max-w-7xl mx-auto px-4 md:px-6">
-            {/* Breadcrumb */}
-            <nav className="mb-4">
-              <ol className="flex items-center gap-2 text-sm text-white/80">
-                <li>
-                  <Link href="/lplpf/" className="hover:text-white transition-colors">
-                    ホーム
-                  </Link>
-                </li>
-                <li>/</li>
-                <li className="text-white font-medium">{pageData.title.replace(' - IPLPF', '')}</li>
-              </ol>
-            </nav>
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
-              {pageData.title.replace(' - IPLPF', '')}
-            </h1>
-          </div>
-        </div>
+      {/* Home page with visual sections */}
+      {isHome && (
+        <>
+          {/* Add padding for fixed header */}
+          <div className="pt-16 md:pt-20" />
+          <LplpfHomeSections />
+        </>
       )}
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
-        <article
-          className="prose prose-slate max-w-none prose-headings:tracking-tight prose-headings:font-semibold prose-a:text-orange-700 prose-a:underline-offset-4 hover:prose-a:text-orange-800 prose-img:rounded-2xl prose-img:shadow-lg"
-          dangerouslySetInnerHTML={{ __html: pageData.html }}
-        />
-      </div>
+      {/* Non-home pages with banner */}
+      {!isHome && (
+        <>
+          {/* Add padding for fixed header */}
+          <div className="pt-16 md:pt-20" />
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 py-12 md:py-16">
+            <div className="max-w-7xl mx-auto px-4 md:px-6">
+              {/* Breadcrumb */}
+              <nav className="mb-4">
+                <ol className="flex items-center gap-2 text-sm text-white/80">
+                  <li>
+                    <Link href="/lplpf/" className="hover:text-white transition-colors">
+                      ホーム
+                    </Link>
+                  </li>
+                  <li>/</li>
+                  <li className="text-white font-medium">{pageData.title.replace(' - IPLPF', '')}</li>
+                </ol>
+              </nav>
+              <h1 className="text-3xl md:text-4xl font-bold text-white">
+                {pageData.title.replace(' - IPLPF', '')}
+              </h1>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
+            <article
+              className="prose prose-slate max-w-none prose-headings:tracking-tight prose-headings:font-semibold prose-a:text-orange-700 prose-a:underline-offset-4 hover:prose-a:text-orange-800 prose-img:rounded-2xl prose-img:shadow-lg"
+              dangerouslySetInnerHTML={{ __html: pageData.html }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
