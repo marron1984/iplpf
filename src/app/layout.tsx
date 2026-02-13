@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "寄付する | PLP財団",
+  title: "国際P-LP財団 | 平和を愛する人を増やす",
   description:
-    "PLP財団への寄付ページです。国連活動支援、平和推進、調査研究、支援活動を継続するためのご支援をお願いいたします。",
+    "国際P-LP財団（IPLPF）は、国連活動支援、平和推進、調査研究、支援活動を通じて世界の平和構築に貢献しています。",
   openGraph: {
-    title: "寄付する | PLP財団",
+    title: "国際P-LP財団 | 平和を愛する人を増やす",
     description:
-      "PLP財団への寄付ページです。国連活動支援、平和推進、調査研究、支援活動を継続するためのご支援をお願いいたします。",
+      "国連活動支援、平和推進、調査研究、支援活動を通じて世界の平和構築に貢献しています。",
     type: "website",
     locale: "ja_JP",
   },

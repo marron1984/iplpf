@@ -1,255 +1,113 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { motion } from 'framer-motion';
-import Button from '@/components/ui/Button';
-import { trackEvent } from '@/lib/analytics';
-import { ANALYTICS_EVENTS } from '@/lib/donate/constants';
-import { HEADER_LOGO_URL, CHILD_CAMBODIA_1 } from '@/lib/iplpfAssets';
+import { HEADER_LOGO_URL, HERO_URL } from '@/lib/iplpfAssets';
 
-function AnimatedCheckmark() {
+function ThanksContent() {
   return (
-    <motion.div
-      className="relative w-28 h-28 mx-auto"
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
-    >
-      <motion.div
-        className="absolute inset-0 rounded-full border-2 border-amber-200"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      />
-      <motion.div
-        className="absolute inset-2 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.4 }}
-      >
-        <motion.svg
-          className="w-12 h-12 text-white"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={3}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <motion.path
-            d="M5 12l5 5L20 7"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ delay: 0.6, duration: 0.4, ease: 'easeOut' }}
-          />
-        </motion.svg>
-      </motion.div>
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          className="absolute inset-0 rounded-full border border-amber-300"
-          initial={{ scale: 1, opacity: 0.6 }}
-          animate={{ scale: 2 + i * 0.5, opacity: 0 }}
-          transition={{ delay: 0.8 + i * 0.15, duration: 1, ease: 'easeOut' }}
-        />
-      ))}
-    </motion.div>
-  );
-}
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } },
-};
-
-function ThanksPageContent() {
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
-  const referenceNumber = sessionId ? sessionId.slice(0, 8).toUpperCase() : null;
-
-  useEffect(() => {
-    if (sessionId) {
-      trackEvent(ANALYTICS_EVENTS.COMPLETE, { session_id: sessionId });
-    }
-  }, [sessionId]);
-
-  return (
-    <div className="min-h-screen bg-[#FFFBF5] relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-amber-100/40 to-transparent rounded-full blur-3xl" />
-      </div>
-
+    <div className="min-h-screen bg-[#FFFBF5]">
       {/* Header */}
-      <motion.header
-        className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl shadow-sm"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="max-w-3xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 md:gap-3">
-            <img src={HEADER_LOGO_URL} alt="国際P-LP財団 公式ロゴ" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
-            <span className="font-bold text-stone-900 tracking-tight text-sm md:text-lg">PLP財団</span>
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <img src={HEADER_LOGO_URL} alt="IPLPF" className="w-10 h-10 object-contain" />
+            <span className="font-bold text-sm text-stone-900">国際P-LP財団</span>
           </Link>
         </div>
-      </motion.header>
+      </header>
 
-      <main className="relative pt-28 md:pt-32 pb-20 px-4 md:px-6">
-        <div className="max-w-lg mx-auto">
-          <AnimatedCheckmark />
+      <main className="py-16 md:py-24">
+        <div className="max-w-lg mx-auto px-4 text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30"
+          >
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          </motion.div>
 
-          <motion.div className="text-center mt-8 md:mt-10" initial="hidden" animate="visible" variants={stagger}>
-            <motion.h1
-              variants={fadeUp}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="text-3xl md:text-5xl font-bold text-stone-900 mb-4 md:mb-6"
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-2xl md:text-3xl font-bold text-stone-900 mb-4"
+          >
+            ありがとうございます
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-stone-600 mb-8 leading-relaxed"
+          >
+            ご寄付の手続きが完了しました。
+            <br />
+            いただいたご支援は、世界の平和構築と子どもたちの未来のために大切に使わせていただきます。
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="rounded-2xl overflow-hidden mb-8 shadow-lg"
+          >
+            <img src={HERO_URL} alt="平和活動" className="w-full h-48 object-cover" />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-white rounded-xl p-5 ring-1 ring-stone-100 text-left mb-8"
+          >
+            <h3 className="font-bold text-stone-900 mb-3">今後の流れ</h3>
+            <ul className="space-y-2 text-sm text-stone-600">
+              <li className="flex gap-2">
+                <span className="text-amber-500 font-bold shrink-0">1.</span>
+                確認メールをお送りしました
+              </li>
+              <li className="flex gap-2">
+                <span className="text-amber-500 font-bold shrink-0">2.</span>
+                領収書が必要な場合はお問い合わせください
+              </li>
+              <li className="flex gap-2">
+                <span className="text-amber-500 font-bold shrink-0">3.</span>
+                活動報告はお知らせページで公開しています
+              </li>
+            </ul>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center"
+          >
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center h-12 px-6 text-sm font-bold text-white rounded-xl bg-gradient-to-r from-amber-500 to-orange-500"
             >
-              ありがとう
-              <br />
-              ございます
-            </motion.h1>
-
-            <motion.p
-              variants={fadeUp}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="text-stone-600 text-base md:text-lg leading-relaxed mb-8 md:mb-10"
+              トップページへ
+            </Link>
+            <Link
+              href="/news"
+              className="inline-flex items-center justify-center h-12 px-6 text-sm font-bold text-stone-700 rounded-xl bg-white ring-1 ring-stone-200 hover:bg-stone-50 transition-colors"
             >
-              あなたのご支援が、世界の平和と
-              <br />
-              持続可能な未来に繋がります。
-            </motion.p>
-
-            {/* Activity Image */}
-            <motion.div
-              variants={fadeUp}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="w-32 h-32 md:w-40 md:h-40 mx-auto mb-8 rounded-full overflow-hidden ring-4 ring-amber-200/50 shadow-xl"
-            >
-              <img src={CHILD_CAMBODIA_1} alt="カンボジアの子どもたち" className="w-full h-full object-cover" />
-            </motion.div>
-
-            {/* Reference Number */}
-            {referenceNumber && (
-              <motion.div
-                variants={fadeUp}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white rounded-2xl p-6 md:p-8 mb-8 shadow-sm ring-1 ring-stone-100"
-              >
-                <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">受付番号</p>
-                <p className="text-2xl md:text-3xl font-bold text-stone-900 tracking-wider font-mono">{referenceNumber}</p>
-                <p className="text-xs text-stone-400 mt-3">お問い合わせの際にお伝えください</p>
-              </motion.div>
-            )}
-
-            {/* Info Card */}
-            <motion.div
-              variants={fadeUp}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white rounded-2xl p-5 md:p-6 mb-8 text-left shadow-sm ring-1 ring-stone-100"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 text-lg">
-                  ✉️
-                </div>
-                <div>
-                  <h3 className="font-semibold text-stone-900 mb-1">確認メールをお送りしました</h3>
-                  <p className="text-sm text-stone-500 leading-relaxed">領収書が必要な場合は、メール内の案内に従ってお申し込みください。</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Quote */}
-            <motion.div
-              variants={fadeUp}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="py-8 md:py-10 border-y border-stone-200"
-            >
-              <blockquote className="text-xl md:text-2xl font-light text-stone-700 italic leading-relaxed">
-                &ldquo;平和は微笑みから始まります&rdquo;
-              </blockquote>
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mt-4">— マザー・テレサ</p>
-            </motion.div>
-
-            {/* Share */}
-            <motion.div
-              variants={fadeUp}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-8 md:mt-10"
-            >
-              <p className="text-stone-500 text-sm mb-5">この活動を広めていただけませんか？</p>
-              <div className="flex justify-center gap-3">
-                {[
-                  {
-                    name: 'X',
-                    href: `https://twitter.com/intent/tweet?text=PLP財団に寄付しました。世界平和とSDGs達成のために、あなたも一緒に支援しませんか？&url=https://iplpf.org/donate`,
-                    icon: (
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
-                    ),
-                  },
-                  {
-                    name: 'Facebook',
-                    href: `https://www.facebook.com/sharer/sharer.php?u=https://iplpf.org/donate`,
-                    icon: (
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                      </svg>
-                    ),
-                  },
-                  {
-                    name: 'LINE',
-                    href: `https://line.me/R/msg/text/?PLP財団に寄付しました。%0Ahttps://iplpf.org/donate`,
-                    icon: (
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
-                      </svg>
-                    ),
-                  },
-                ].map((social) => (
-                  <motion.a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-xl flex items-center justify-center bg-white ring-1 ring-stone-100 text-stone-500 hover:ring-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-all"
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {social.icon}
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* CTA */}
-            <motion.div
-              variants={fadeUp}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-10 md:mt-12"
-            >
-              <Link href="/">
-                <Button variant="primary" size="lg" className="w-full bg-stone-900 hover:bg-stone-800 border-0 py-4">
-                  トップページへ戻る
-                </Button>
-              </Link>
-            </motion.div>
+              活動報告を見る
+            </Link>
           </motion.div>
         </div>
       </main>
 
-      <footer className="border-t border-stone-200 py-6 bg-white">
-        <div className="max-w-3xl mx-auto px-4 md:px-6 text-center">
-          <p className="text-xs text-stone-400">
-            © {new Date().getFullYear()} PLP財団. All rights reserved.
-          </p>
+      <footer className="bg-stone-900 py-10">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <p className="text-sm text-stone-500">© {new Date().getFullYear()} 国際P-LP財団. All rights reserved.</p>
         </div>
       </footer>
     </div>
@@ -258,18 +116,8 @@ function ThanksPageContent() {
 
 export default function ThanksPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#FFFBF5] flex items-center justify-center">
-          <motion.div
-            className="w-10 h-10 border-3 border-amber-200 border-t-amber-500 rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          />
-        </div>
-      }
-    >
-      <ThanksPageContent />
+    <Suspense fallback={<div className="min-h-screen bg-[#FFFBF5]" />}>
+      <ThanksContent />
     </Suspense>
   );
 }
