@@ -40,6 +40,29 @@ export const CHILD_CAMBODIA_3 = 'https://iplpf.org/wp-content/uploads/2026/01/%E
 export const CHILD_MYANMAR_1 = 'https://iplpf.org/wp-content/uploads/2026/01/%E3%83%9F%E3%83%A3%E3%83%B3%E3%83%9E%E3%83%BC%E3%81%AE%E5%AD%90%E3%81%A9%E3%82%82%E3%81%9F%E3%81%A1-768x576.png';
 export const CHILD_MYANMAR_2 = 'https://iplpf.org/wp-content/uploads/2026/01/%E3%83%9F%E3%83%A3%E3%83%B3%E3%83%9E%E3%83%BC%E3%81%AE%E5%AD%90%E3%81%A9%E3%82%82%E3%81%9F%E3%81%A12-768x576.png';
 
+// ============================================
+// Project Photos - Field activities & disaster relief
+// ============================================
+
+// Myanmar - Children daily life
+export const PROJECT_MYANMAR_GIRL_WATER = '/projects/myanmar-girl-water.png';
+export const PROJECT_MYANMAR_GIRL_SMILE = '/projects/myanmar-girl-smile.png';
+export const PROJECT_MYANMAR_CHILDREN_FOOD = '/projects/myanmar-children-food.png';
+export const PROJECT_MYANMAR_FAMILY_WELL = '/projects/myanmar-family-well.png';
+
+// Myanmar Earthquake 2025 - Disaster relief
+export const PROJECT_MYANMAR_QUAKE_TEMPLE = '/projects/myanmar-quake-temple.png';
+export const PROJECT_MYANMAR_QUAKE_PAGODA = '/projects/myanmar-quake-pagoda.png';
+export const PROJECT_MYANMAR_QUAKE_SCHOOL = '/projects/myanmar-quake-school.png';
+export const PROJECT_MYANMAR_QUAKE_BRIDGE = '/projects/myanmar-quake-bridge.png';
+
+// Field Staff - On-ground activities
+export const PROJECT_STAFF_SCHOOL = '/projects/staff-school.png';
+export const PROJECT_STAFF_BRIDGE = '/projects/staff-bridge.png';
+export const PROJECT_STAFF_TEMPLE = '/projects/staff-temple.png';
+export const PROJECT_UN_FLAG_CAMP = '/projects/un-flag-camp.png';
+export const PROJECT_HANDOVER = '/projects/handover.png';
+
 // Children photo collection for galleries
 export const CHILDREN_PHOTOS = [
   { src: CHILD_PHILIPPINES_BOY, alt: 'フィリピンの男の子', country: 'フィリピン' },

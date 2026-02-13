@@ -10,10 +10,12 @@
 }
 
 @theme inline {
-  --color-background: #FFFBF5;
-  --color-foreground: #1C1917;
-  --color-warm: #FFFBF5;
-  --color-amber-50: #FFFBEB;
+  --color-background: #F8FAFC;
+  --color-foreground: #0F172A;
+  --color-un-blue: #0052A4;
+  --color-un-light: #4A90D9;
+  --color-un-sky: #009EDB;
+  --color-navy: #1E3A5F;
   --font-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
 }
 
@@ -30,12 +32,12 @@ body {
 }
 
 ::selection {
-  background: #FDE68A;
-  color: #92400E;
+  background: #BFDBFE;
+  color: #1E3A8A;
 }
 
 :focus-visible {
-  outline: 2px solid #F59E0B;
+  outline: 2px solid #0052A4;
   outline-offset: 2px;
 }
 
@@ -51,6 +53,6 @@ input, textarea, select {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D6D3D1;
+  background: #94A3B8;
   border-radius: 3px;
 }

@@ -50,14 +50,14 @@ function AmountCard({
       className={cn(
         'relative p-4 md:p-5 rounded-xl text-left transition-all duration-200 border-2',
         selected
-          ? 'border-amber-500 bg-amber-500 text-white shadow-lg shadow-amber-500/25'
-          : 'border-stone-200 bg-white hover:border-amber-300 hover:shadow-md'
+          ? 'border-[#0052A4] bg-[#0052A4] text-white shadow-lg shadow-blue-900/20'
+          : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-md'
       )}
     >
-      <span className={cn('text-lg md:text-xl font-bold', selected ? 'text-white' : 'text-stone-900')}>
+      <span className={cn('text-lg md:text-xl font-bold', selected ? 'text-white' : 'text-slate-900')}>
         ¥{amount.toLocaleString()}
       </span>
-      <span className={cn('block text-xs mt-1', selected ? 'text-white/80' : 'text-stone-500')}>
+      <span className={cn('block text-xs mt-1', selected ? 'text-white/80' : 'text-slate-500')}>
         {amount === 3000 && '気軽に始める'}
         {amount === 5000 && '一番人気'}
         {amount === 10000 && 'しっかり支援'}
@@ -70,14 +70,14 @@ function AmountCard({
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-stone-200">
+    <div className="border-b border-slate-200">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-4 text-left"
       >
-        <span className="font-medium text-stone-900 pr-4">{question}</span>
+        <span className="font-medium text-slate-900 pr-4">{question}</span>
         <svg
-          className={cn('w-5 h-5 text-stone-400 shrink-0 transition-transform', open && 'rotate-180')}
+          className={cn('w-5 h-5 text-slate-400 shrink-0 transition-transform', open && 'rotate-180')}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -93,7 +93,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <p className="pb-4 text-sm text-stone-600 leading-relaxed">{answer}</p>
+            <p className="pb-4 text-sm text-slate-600 leading-relaxed">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -129,15 +129,15 @@ function DonateContent() {
   const canProceed = selection.amount >= 1000;
 
   return (
-    <div className="min-h-screen bg-[#FFFBF5]">
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <img src={HEADER_LOGO_URL} alt="IPLPF" className="w-10 h-10 object-contain" />
-            <span className="font-bold text-sm text-stone-900">国際P-LP財団</span>
+            <span className="font-bold text-sm text-slate-900">International Peace-Loving People Foundation</span>
           </Link>
-          <Link href="/" className="text-sm text-stone-500 hover:text-stone-900 transition-colors">
+          <Link href="/" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
             トップに戻る
           </Link>
         </div>
@@ -148,7 +148,7 @@ function DonateContent() {
         <section className="relative py-16 md:py-24 overflow-hidden">
           <div className="absolute inset-0">
             <img src={HERO_URL} alt="" className="w-full h-full object-cover opacity-20" />
-            <div className="absolute inset-0 bg-gradient-to-b from-amber-50/80 to-[#FFFBF5]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-blue-50/80 to-[#F8FAFC]" />
           </div>
 
           <motion.div
@@ -157,11 +157,11 @@ function DonateContent() {
             animate="visible"
             variants={stagger}
           >
-            <motion.p variants={fadeUp} className="text-amber-600 font-semibold text-sm mb-3">DONATE</motion.p>
-            <motion.h1 variants={fadeUp} className="text-3xl md:text-5xl font-bold text-stone-900 mb-4">
+            <motion.p variants={fadeUp} className="text-[#0052A4] font-semibold text-sm mb-3">DONATE</motion.p>
+            <motion.h1 variants={fadeUp} className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">
               あなたの想いを届ける
             </motion.h1>
-            <motion.p variants={fadeUp} className="text-stone-600 max-w-xl mx-auto">
+            <motion.p variants={fadeUp} className="text-slate-600 max-w-xl mx-auto">
               いただいたご寄付は、世界の平和構築と子どもたちの未来のために大切に使わせていただきます。
             </motion.p>
           </motion.div>
@@ -191,7 +191,7 @@ function DonateContent() {
           <div className="max-w-2xl mx-auto px-4">
             {/* Frequency */}
             <div className="mb-8">
-              <h2 className="text-lg font-bold text-stone-900 mb-4">寄付の種類</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">寄付の種類</h2>
               <div className="grid grid-cols-2 gap-3">
                 {(['one_time', 'monthly'] as DonationFrequency[]).map((freq) => (
                   <button
@@ -200,8 +200,8 @@ function DonateContent() {
                     className={cn(
                       'py-3 rounded-xl font-medium text-sm transition-all border-2',
                       selection.frequency === freq
-                        ? 'border-amber-500 bg-amber-50 text-amber-700'
-                        : 'border-stone-200 bg-white text-stone-600 hover:border-amber-300'
+                        ? 'border-[#0052A4] bg-blue-50 text-blue-700'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300'
                     )}
                   >
                     {FREQUENCY_LABELS[freq]}
@@ -215,7 +215,7 @@ function DonateContent() {
 
             {/* Amount */}
             <div className="mb-8">
-              <h2 className="text-lg font-bold text-stone-900 mb-4">金額を選ぶ</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">金額を選ぶ</h2>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 {AMOUNT_CHIPS.map((amount) => (
                   <AmountCard
@@ -227,7 +227,7 @@ function DonateContent() {
                 ))}
               </div>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 font-medium">¥</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">¥</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -235,8 +235,8 @@ function DonateContent() {
                   value={currentAmount}
                   onChange={(e) => handleCustomAmount(e.target.value)}
                   className={cn(
-                    'w-full pl-8 pr-4 py-3 rounded-xl border-2 text-stone-900 placeholder:text-stone-400 transition-colors',
-                    isCustom ? 'border-amber-500 bg-amber-50' : 'border-stone-200 bg-white hover:border-stone-300'
+                    'w-full pl-8 pr-4 py-3 rounded-xl border-2 text-slate-900 placeholder:text-slate-400 transition-colors',
+                    isCustom ? 'border-[#0052A4] bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'
                   )}
                 />
               </div>
@@ -244,7 +244,7 @@ function DonateContent() {
 
             {/* Purpose */}
             <div className="mb-8">
-              <h2 className="text-lg font-bold text-stone-900 mb-4">使途を選ぶ</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">使途を選ぶ</h2>
               <div className="grid grid-cols-1 gap-2">
                 {(Object.entries(PURPOSE_LABELS) as [DonationPurpose, string][]).map(([key, label]) => (
                   <button
@@ -253,19 +253,19 @@ function DonateContent() {
                     className={cn(
                       'flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all border-2',
                       selection.purpose === key
-                        ? 'border-amber-500 bg-amber-50'
-                        : 'border-stone-200 bg-white hover:border-amber-300'
+                        ? 'border-[#0052A4] bg-blue-50'
+                        : 'border-slate-200 bg-white hover:border-blue-300'
                     )}
                   >
                     <div
                       className={cn(
                         'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0',
-                        selection.purpose === key ? 'border-amber-500' : 'border-stone-300'
+                        selection.purpose === key ? 'border-[#0052A4]' : 'border-slate-300'
                       )}
                     >
-                      {selection.purpose === key && <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />}
+                      {selection.purpose === key && <div className="w-2.5 h-2.5 rounded-full bg-[#0052A4]" />}
                     </div>
-                    <span className={cn('text-sm font-medium', selection.purpose === key ? 'text-amber-700' : 'text-stone-700')}>
+                    <span className={cn('text-sm font-medium', selection.purpose === key ? 'text-blue-700' : 'text-slate-700')}>
                       {label}
                     </span>
                   </button>
@@ -274,20 +274,20 @@ function DonateContent() {
             </div>
 
             {/* Summary + Proceed */}
-            <div className="bg-white rounded-2xl shadow-lg ring-1 ring-stone-100 p-6 mb-8">
-              <h3 className="font-bold text-stone-900 mb-4">寄付内容</h3>
+            <div className="bg-white rounded-2xl shadow-lg ring-1 ring-slate-100 p-6 mb-8">
+              <h3 className="font-bold text-slate-900 mb-4">寄付内容</h3>
               <div className="space-y-2 text-sm mb-6">
                 <div className="flex justify-between">
-                  <span className="text-stone-500">種類</span>
-                  <span className="font-medium text-stone-900">{FREQUENCY_LABELS[selection.frequency]}</span>
+                  <span className="text-slate-500">種類</span>
+                  <span className="font-medium text-slate-900">{FREQUENCY_LABELS[selection.frequency]}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-500">金額</span>
-                  <span className="font-bold text-amber-600 text-lg">¥{selection.amount.toLocaleString()}</span>
+                  <span className="text-slate-500">金額</span>
+                  <span className="font-bold text-[#0052A4] text-lg">¥{selection.amount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-500">使途</span>
-                  <span className="font-medium text-stone-900">{PURPOSE_LABELS[selection.purpose]}</span>
+                  <span className="text-slate-500">使途</span>
+                  <span className="font-medium text-slate-900">{PURPOSE_LABELS[selection.purpose]}</span>
                 </div>
               </div>
 
@@ -296,8 +296,8 @@ function DonateContent() {
                 className={cn(
                   'block w-full text-center py-4 rounded-xl font-bold text-base transition-all',
                   canProceed
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40'
-                    : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                    ? 'bg-[#0052A4] text-white shadow-lg shadow-blue-900/20 hover:bg-[#003d7a]'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 )}
                 onClick={(e) => !canProceed && e.preventDefault()}
               >
@@ -307,13 +307,13 @@ function DonateContent() {
 
             {/* Impact */}
             <div className="mb-12">
-              <h2 className="text-lg font-bold text-stone-900 mb-4">あなたの寄付でできること</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">あなたの寄付でできること</h2>
               <div className="grid grid-cols-2 gap-3">
                 {IMPACT_ITEMS.map((item) => (
-                  <div key={item.amount} className="bg-white rounded-xl p-4 ring-1 ring-stone-100">
+                  <div key={item.amount} className="bg-white rounded-xl p-4 ring-1 ring-slate-100">
                     <span className="text-2xl mb-2 block">{item.icon}</span>
-                    <p className="text-amber-600 font-bold text-sm mb-1">¥{item.amount.toLocaleString()}</p>
-                    <p className="text-xs text-stone-500 leading-relaxed">{item.description}</p>
+                    <p className="text-[#0052A4] font-bold text-sm mb-1">¥{item.amount.toLocaleString()}</p>
+                    <p className="text-xs text-slate-500 leading-relaxed">{item.description}</p>
                   </div>
                 ))}
               </div>
@@ -321,8 +321,8 @@ function DonateContent() {
 
             {/* FAQ */}
             <div className="mb-12">
-              <h2 className="text-lg font-bold text-stone-900 mb-4">よくある質問</h2>
-              <div className="bg-white rounded-2xl ring-1 ring-stone-100 px-5">
+              <h2 className="text-lg font-bold text-slate-900 mb-4">よくある質問</h2>
+              <div className="bg-white rounded-2xl ring-1 ring-slate-100 px-5">
                 {FAQ_ITEMS.map((item, i) => (
                   <FAQItem key={i} question={item.question} answer={item.answer} />
                 ))}
@@ -333,9 +333,9 @@ function DonateContent() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-stone-900 py-10">
+      <footer className="bg-[#0F172A] py-10">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-sm text-stone-500">© {new Date().getFullYear()} 国際P-LP財団. All rights reserved.</p>
+          <p className="text-sm text-slate-500">© {new Date().getFullYear()} International Peace-Loving People Foundation. All rights reserved.</p>
         </div>
       </footer>
     </div>
@@ -344,7 +344,7 @@ function DonateContent() {
 
 export default function DonatePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FFFBF5]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
       <DonateContent />
     </Suspense>
   );
