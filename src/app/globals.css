@@ -1,55 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* ========================================
-   Modern & Zen Minimalism Design System
-   ======================================== */
-
-:root {
-  /* Base Colors - Warm, Organic Tones */
-  --bg-primary: #FAFAF9;      /* Warm off-white */
-  --bg-secondary: #F5F5F4;    /* Stone 100 */
-  --bg-tertiary: #E7E5E4;     /* Stone 200 */
-
-  /* Text Colors - Refined Grays */
-  --text-primary: #1C1917;    /* Stone 900 */
-  --text-secondary: #57534E;  /* Stone 600 */
-  --text-tertiary: #A8A29E;   /* Stone 400 */
-
-  /* Accent - Single, Muted Indigo */
-  --accent: #4F46E5;          /* Indigo 600 */
-  --accent-light: #E0E7FF;    /* Indigo 100 */
-  --accent-muted: #6366F1;    /* Indigo 500 */
-
-  /* Shadows - Soft, Organic */
-  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.06);
-  --shadow-lg: 0 12px 32px rgba(28, 25, 23, 0.08);
-  --shadow-xl: 0 24px 48px rgba(28, 25, 23, 0.10);
-
-  /* Transitions - Organic Easing */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-  --duration-fast: 200ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
-}
-
-@theme inline {
-  --color-background: var(--bg-primary);
-  --color-foreground: var(--text-primary);
-  --font-sans: "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* Typography - Inter + Noto Sans JP */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff2') format('woff2');
-}
-
 @font-face {
   font-family: 'Noto Sans JP';
   font-style: normal;
@@ -58,237 +9,48 @@
   src: url('https://fonts.gstatic.com/s/notosansjp/v53/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75s.woff2') format('woff2');
 }
 
-/* Base Styles */
+@theme inline {
+  --color-background: #FFFBF5;
+  --color-foreground: #1C1917;
+  --color-warm: #FFFBF5;
+  --color-amber-50: #FFFBEB;
+  --font-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  line-height: 1.7;
-  letter-spacing: -0.01em;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Selection */
 ::selection {
-  background: var(--accent-light);
-  color: var(--accent);
+  background: #FDE68A;
+  color: #92400E;
 }
 
-/* Focus Ring - Minimal */
 :focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent);
+  outline: 2px solid #F59E0B;
+  outline-offset: 2px;
 }
 
-/* Tap Highlight */
-button, a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Form Elements */
 input, textarea, select {
   font-size: 16px;
   font-family: inherit;
 }
 
-/* ========================================
-   Utility Classes
-   ======================================== */
-
-/* Zen Container - Generous Whitespace */
-.zen-container {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-@media (min-width: 768px) {
-  .zen-container {
-    padding: 0 48px;
-  }
-}
-
-/* Subtle Glass Effect */
-.glass-subtle {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* Soft Card */
-.card-soft {
-  background: white;
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
-  transition: box-shadow var(--duration-normal) var(--ease-out-expo),
-              transform var(--duration-normal) var(--ease-out-expo);
-}
-
-.card-soft:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-/* Text Styles */
-.text-display {
-  font-weight: 200;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
-
-.text-heading {
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
-}
-
-.text-body {
-  font-weight: 400;
-  line-height: 1.7;
-  color: var(--text-secondary);
-}
-
-.text-caption {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-
-/* Accent Text */
-.text-accent {
-  color: var(--accent);
-}
-
-/* ========================================
-   Animation Utilities
-   ======================================== */
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-@keyframes particle-float {
-  0% {
-    transform: translateY(0) translateX(0) scale(1);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) translateX(var(--drift, 0)) scale(0.5);
-    opacity: 0;
-  }
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-.animate-fadeUp {
-  animation: fadeUp 0.6s var(--ease-out-expo) forwards;
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.4s var(--ease-out-expo) forwards;
-}
-
-.animate-scaleIn {
-  animation: scaleIn 0.5s var(--ease-out-expo) forwards;
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-/* Staggered animations */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
-
-/* ========================================
-   Scrollbar - Minimal
-   ======================================== */
-
 ::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--text-tertiary);
+  background: #D6D3D1;
   border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-/* ========================================
-   Button Ripple Effect
-   ======================================== */
-
-.ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  animation: ripple 0.6s linear;
-  pointer-events: none;
 }
