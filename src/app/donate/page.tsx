@@ -17,13 +17,13 @@ import {
   IMPACT_ITEMS,
 } from '@/lib/donate/constants';
 import { cn } from '@/lib/utils';
+import SiteHeader from '@/components/common/SiteHeader';
+import SiteFooter from '@/components/common/SiteFooter';
 import {
-  HEADER_LOGO_URL,
   HERO_URL,
   CHILD_PHILIPPINES_BOY,
   CHILD_CAMBODIA_1,
   CHILD_MYANMAR_1,
-  CHILDREN_PHOTOS,
 } from '@/lib/iplpfAssets';
 
 const fadeUp = {
@@ -130,18 +130,7 @@ function DonateContent() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <img src={HEADER_LOGO_URL} alt="IPLPF" className="w-10 h-10 object-contain" />
-            <span className="font-bold text-sm text-slate-900">International Peace-Loving People Foundation</span>
-          </Link>
-          <Link href="/" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
-            トップに戻る
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main>
         {/* Hero */}
@@ -332,12 +321,7 @@ function DonateContent() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#0F172A] py-10">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-sm text-slate-500">© {new Date().getFullYear()} International Peace-Loving People Foundation. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
