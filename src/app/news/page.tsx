@@ -2,17 +2,30 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { HEADER_LOGO_URL } from '@/lib/iplpfAssets';
+import SiteHeader from '@/components/common/SiteHeader';
+import SiteFooter from '@/components/common/SiteFooter';
 
 const NEWS_ITEMS = [
   {
-    date: '2024.12.15',
+    date: '2025.04.10',
+    category: '緊急支援',
+    title: 'ミャンマー地震 緊急支援活動報告（第2報）',
+    summary: '現地スタッフによる被災地への義援金・物資の直接手渡しが完了しました。引き続き復興支援を継続します。',
+  },
+  {
+    date: '2025.03.30',
+    category: '緊急支援',
+    title: 'ミャンマー地震 スタッフが被災地入り',
+    summary: '2025年3月に発生したミャンマー大地震を受け、当財団スタッフが直接被災地に赴き緊急支援活動を開始しました。',
+  },
+  {
+    date: '2025.01.15',
     category: '活動報告',
     title: 'カンボジアでの教育支援プログラム成果報告',
     summary: 'カンボジア・プノンペン近郊の学校での教育支援プログラムの成果をご報告します。',
   },
   {
-    date: '2024.11.20',
+    date: '2024.12.01',
     category: 'お知らせ',
     title: '年末年始の寄付キャンペーンのお知らせ',
     summary: '皆様のご支援に感謝し、年末年始の特別キャンペーンを実施いたします。',
@@ -28,12 +41,6 @@ const NEWS_ITEMS = [
     category: 'イベント',
     title: '国連総会サイドイベントに参加しました',
     summary: '第79回国連総会にあわせたサイドイベントに参加し、平和教育について発表しました。',
-  },
-  {
-    date: '2024.08.01',
-    category: '活動報告',
-    title: 'ミャンマー支援物資の配送完了',
-    summary: 'ミャンマーの支援を必要とする地域への物資配送が完了しました。',
   },
   {
     date: '2024.02.10',
@@ -53,23 +60,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function NewsPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <img src={HEADER_LOGO_URL} alt="IPLPF" className="w-10 h-10 object-contain" />
-            <span className="font-bold text-sm text-slate-900">International Peace-Loving People Foundation</span>
-          </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">ホーム</Link>
-            <Link
-              href="/donate"
-              className="hidden md:inline-flex items-center h-9 px-5 text-sm font-bold text-white rounded-full bg-[#0052A4] hover:bg-[#003d7a]"
-            >
-              寄付する
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main>
         <section className="py-16 md:py-24">
@@ -107,11 +98,7 @@ export default function NewsPage() {
         </section>
       </main>
 
-      <footer className="bg-[#0F172A] py-10">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-sm text-slate-500">© {new Date().getFullYear()} International Peace-Loving People Foundation. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

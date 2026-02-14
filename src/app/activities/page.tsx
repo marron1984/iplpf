@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import SiteHeader from '@/components/common/SiteHeader';
+import SiteFooter from '@/components/common/SiteFooter';
 import {
-  HEADER_LOGO_URL,
   HERO_URL,
   SDGS_URL,
   MISSION_URL,
@@ -38,23 +39,7 @@ const stagger = {
 export default function ActivitiesPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <img src={HEADER_LOGO_URL} alt="IPLPF" className="w-10 h-10 object-contain" />
-            <span className="font-bold text-sm text-slate-900">国際P-LP財団</span>
-          </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/" className="text-sm text-slate-500 hover:text-[#0052A4] transition-colors">ホーム</Link>
-            <Link
-              href="/donate"
-              className="hidden md:inline-flex items-center h-9 px-5 text-sm font-bold text-white rounded-full bg-[#0052A4]"
-            >
-              寄付する
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main>
         {/* Hero */}
@@ -307,11 +292,7 @@ export default function ActivitiesPage() {
         </section>
       </main>
 
-      <footer className="bg-[#0F172A] py-10">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-sm text-slate-500">&copy; {new Date().getFullYear()} International Peace-Loving People Foundation. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

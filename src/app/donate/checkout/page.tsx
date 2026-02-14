@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
@@ -15,10 +15,10 @@ import {
   DONOR_TYPE_LABELS,
 } from '@/lib/donate/constants';
 import { cn } from '@/lib/utils';
-import { HEADER_LOGO_URL } from '@/lib/iplpfAssets';
+import SiteHeader from '@/components/common/SiteHeader';
+import SiteFooter from '@/components/common/SiteFooter';
 
 function CheckoutContent() {
-  const router = useRouter();
   const sp = useSearchParams();
 
   const frequency = (sp.get('freq') as DonationFrequency) || 'one_time';
@@ -73,18 +73,7 @@ function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <img src={HEADER_LOGO_URL} alt="IPLPF" className="w-10 h-10 object-contain" />
-            <span className="font-bold text-sm text-slate-900">International Peace-Loving People Foundation</span>
-          </Link>
-          <Link href="/donate" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
-            戻る
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="py-10 md:py-16">
         <div className="max-w-xl mx-auto px-4">
@@ -246,11 +235,7 @@ function CheckoutContent() {
         </div>
       </main>
 
-      <footer className="bg-[#0F172A] py-10">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-sm text-slate-500">© {new Date().getFullYear()} International Peace-Loving People Foundation. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

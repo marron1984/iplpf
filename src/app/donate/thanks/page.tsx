@@ -3,20 +3,14 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { HEADER_LOGO_URL, HERO_URL } from '@/lib/iplpfAssets';
+import SiteHeader from '@/components/common/SiteHeader';
+import SiteFooter from '@/components/common/SiteFooter';
+import { HERO_URL } from '@/lib/iplpfAssets';
 
 function ThanksContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <img src={HEADER_LOGO_URL} alt="IPLPF" className="w-10 h-10 object-contain" />
-            <span className="font-bold text-sm text-slate-900">International Peace-Loving People Foundation</span>
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="py-16 md:py-24">
         <div className="max-w-lg mx-auto px-4 text-center">
@@ -70,15 +64,15 @@ function ThanksContent() {
             <ul className="space-y-2 text-sm text-slate-600">
               <li className="flex gap-2">
                 <span className="text-[#0052A4] font-bold shrink-0">1.</span>
-                確認メールをお送りしました
+                Stripeからの決済確認メールをご確認ください
               </li>
               <li className="flex gap-2">
                 <span className="text-[#0052A4] font-bold shrink-0">2.</span>
-                領収書が必要な場合はお問い合わせください
+                領収書が必要な場合は<Link href="/contact" className="text-[#0052A4] hover:underline">お問い合わせ</Link>ください
               </li>
               <li className="flex gap-2">
                 <span className="text-[#0052A4] font-bold shrink-0">3.</span>
-                活動報告はお知らせページで公開しています
+                活動報告は<Link href="/news" className="text-[#0052A4] hover:underline">お知らせページ</Link>で公開しています
               </li>
             </ul>
           </motion.div>
@@ -105,11 +99,7 @@ function ThanksContent() {
         </div>
       </main>
 
-      <footer className="bg-[#0F172A] py-10">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-sm text-slate-500">© {new Date().getFullYear()} International Peace-Loving People Foundation. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
